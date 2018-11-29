@@ -1,0 +1,8 @@
+#vis{
+	margin-top: 100px;
+}
+
+#map, #filters{
+	height: 600px;
+	border: 1px solid #ccc;
+}
