@@ -11,37 +11,41 @@ All the data that was downloaded with their corresponding information:
 
 ### Geographic data (SF city and neighborhoods shapefiles)
 
-* SF Shoreline and Islands.geojson
+* us_states.json
 date downloaded: 21/11/18
-link: https://data.sfgov.org/Geographic-Locations-and-Boundaries/SF-Shoreline-and-Islands/rgcx-5tix 
+link: https://www2.census.gov/geo/tiger/GENZ2014/shp/
+remarks: this file was further simplified and converted to topojson with Mapshapper
 
-* SF_Street_Names.csv
+* population.csv
+date downloaded: 06/12/18
+link: https://catalog.data.gov/dataset/county-level-data-sets
+
+* poverty2015.csv
+date downloaded: 06/12/18
+link: https://catalog.data.gov/dataset/county-level-data-sets
+
+* unemployment.csv
+date downloaded: 06/12/18
+link: https://catalog.data.gov/dataset/county-level-data-sets
+
+* education_college_completion_rates.csv
+date downloaded: 06/12/18
+link: https://catalog.data.gov/dataset/county-level-data-sets
+
+* best_cities_amazon.csv
 date downloaded: 21/11/18
-link: https://data.sfgov.org/Geographic-Locations-and-Boundaries/Street-Names/6d9h-4u5v
+link: https://www.cnbc.com/2018/08/16/as-amazon-narrows-choice-for-hq2these-cities-finishing-strong.html 
+remarks: this dataset was constructed from the news article
 
-* Bay Area ZIP Codes.geojson
+* top_universities_US_geocoded.csv
 date downloaded: 21/11/18
-link: https://data.sfgov.org/Geographic-Locations-and-Boundaries/Bay-Area-ZIP-Codes/u5j3-svi6
+link: https://www.kaggle.com/mylesoneill/world-university-rankings
+remarks: the locations of the universities where obtained with (https://geocoder.readthedocs.io/providers/GeoNames.html)
 
-* San Francisco ZIP Codes.geojson
+* us_companies.csv
 date downloaded: 21/11/18
-link: https://data.sfgov.org/Geographic-Locations-and-Boundaries/San-Francisco-ZIP-Codes/srq6-hmpi
+link: http://www.opendata500.com/us/about/ 
 
-* Analysis Neighborhoods.geojson
-date downloaded: 21/11/18
-link: https://data.sfgov.org/Geographic-Locations-and-Boundaries/Analysis-Neighborhoods/p5b7-5n3h
 
-* SF Find Neighborhoods.geojson
-date downloaded: 21/11/18
-link: https://data.sfgov.org/Geographic-Locations-and-Boundaries/SF-Find-Neighborhoods/pty2-tcw4 
 
-### Startups and companies in SF
-
-* san-francisco-startups-angellist.csv
-date downloaded: 21/11/18
-link: https://www.kaggle.com/aashay96/san-francisco-based-startups/version/1 
-
-* Tech Companies in SF
-date downloaded: 21/11/18
-link: https://github.com/connor11528/sf-companies 
 
