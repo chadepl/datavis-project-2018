@@ -21,10 +21,10 @@ class MapView {
         var width = 960,
             height = 600;
 
-        this.svg = d3.select(this.element)
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height);
+        this.svg = d3.select(this.element + " svg");
+            // .append("svg")
+            // .attr("width", width)
+            // .attr("height", height);
 
         this.drawMap();
 
@@ -33,7 +33,7 @@ class MapView {
 
     }
 
-    drawMap(){        
+    drawMap(){
 
         var states = topojson.feature(this.geometry, this.geometry.objects.cb_2014_us_state_500k).features;
 
@@ -53,6 +53,7 @@ class MapView {
                             state_companies.push(this.companies[i]);
                     }
                     console.log(state_companies);
+                     this.drawTalentLayer();
                 });
 
     }
