@@ -18,8 +18,10 @@ class MapView {
         this.projection = d3.geoAlbersUsa();
         this.path = d3.geoPath().projection(this.projection);
 
+        var containerWidth = d3.select('#map_idiom').style('width').slice(0, -2);
+
         // this should be responsive
-        var width = 960,
+        var width = containerWidth,
             height = 600;
 
         this.svg = d3.select(this.element + " svg");
