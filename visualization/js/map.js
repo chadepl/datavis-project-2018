@@ -1,6 +1,7 @@
 class MapView {
     constructor(opts){
 
+        this.cb = null;
         this.geometry = opts.data.geometry;
         this.statal_data = opts.data.statal_data; // big dataset with info per state
         this.companies = opts.data.companies;
@@ -17,8 +18,10 @@ class MapView {
         this.projection = d3.geoAlbersUsa();
         this.path = d3.geoPath().projection(this.projection);
 
+        var containerWidth = d3.select('#map_idiom').style('width').slice(0, -2);
+
         // this should be responsive
-        var width = 960,
+        var width = containerWidth,
             height = 600;
 
         this.svg = d3.select(this.element + " svg");
@@ -54,6 +57,7 @@ class MapView {
                     }
                     console.log(state_companies);
                      this.drawTalentLayer();
+                     this.stateClickCb();
                 });
 
     }
@@ -137,6 +141,12 @@ class MapView {
 
     removeCNBCBestCitiesLayer(){
         this.svg.selectAll(".cities").remove();
+    }
+
+    // setters
+
+    setStateClickCb(cb){
+        this.stateClickCb = cb;
     }
 
     

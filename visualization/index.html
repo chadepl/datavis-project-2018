@@ -7,14 +7,26 @@
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 <body>
-	<div class="container"><h1>Data vis project</h1></div>
-	<div class="container" id="vis">
-		<div id="map" class="container nine columns">
-			<svg id="#map_idiom" width="960" height="600"></svg>
+	<div style="text-align: center" class="container"><h1>Data vis project</h1></div>
+	<div class="container">
+		<div id="toggle">
+			<div class="togg" id="map-toggle">Map</div><div class="togg" id="radar-toggle">Radar</div>
 		</div>
+	</div>
+	<div class="container" id="vis">
+		<div class="row">
+			<div id="map" class="container eight columns">
+				<svg id="map_idiom" width="860" height="600"></svg>
+			</div>
 
-		<div id="filters" class="container three columns">
-			<h1>Filters</h1>
+			<div class="container four columns">
+				<div id="radar">
+					Radar
+				</div>
+				<div id="filters">
+					Filters
+				</div>
+			</div>
 		</div>
 	</div>
 	<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->

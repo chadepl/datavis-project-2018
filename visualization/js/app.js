@@ -40,7 +40,6 @@ var promises = [
 ];
 
 Promise.all(promises).then(function(files) {
-    console.log(files);
     let opts = {
         element: "#map",
         data: {
@@ -54,6 +53,7 @@ Promise.all(promises).then(function(files) {
     }
     
     map = new MapView(opts);
+    map.setStateClickCb(stateClickCb);
 
     d3.select(".map-idiom")
         .on("click", d => {
@@ -65,6 +65,13 @@ Promise.all(promises).then(function(files) {
                 layer_on = !layer_on;
             }});
 })
+
+// callbacks
+
+var stateClickCb = function(){
+    console.log("cb");
+    // can call the radar stuff here
+}
 
 
 
