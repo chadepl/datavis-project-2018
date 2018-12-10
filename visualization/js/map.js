@@ -1,6 +1,7 @@
 class MapView {
     constructor(opts){
 
+        this.cb = null;
         this.geometry = opts.data.geometry;
         this.statal_data = opts.data.statal_data; // big dataset with info per state
         this.companies = opts.data.companies;
@@ -54,6 +55,7 @@ class MapView {
                     }
                     console.log(state_companies);
                      this.drawTalentLayer();
+                     this.stateClickCb();
                 });
 
     }
@@ -137,6 +139,12 @@ class MapView {
 
     removeCNBCBestCitiesLayer(){
         this.svg.selectAll(".cities").remove();
+    }
+
+    // setters
+
+    setStateClickCb(cb){
+        this.stateClickCb = cb;
     }
 
     
