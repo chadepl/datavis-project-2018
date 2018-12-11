@@ -1,5 +1,13 @@
 #vis{
 	margin-top: 100px;
+  width: 95%;
+  margin: 20px auto;
+  text-align: center;
+}
+
+.left{
+  margin-left: 2%;
+  width: 36% !important; 
 }
 
 #toggle{
