@@ -3,18 +3,17 @@ class MapView {
 
         this.cb = null;
         this.geometry = opts.data.geometry;
-        this.statal_data = opts.data.statal_data; // big dataset with info per state
-        this.companies = opts.data.companies;
-        this.universities = opts.data.universities;
-        this.cnbc_best_cities = opts.data.cnbc_best_cities;
-        this.us_counties = opts.data.us_counties;
+        this.population = opts.data.population;
+        this.stability = opts.data.stability;
+        this.talent = opts.data.talent;
+        this.development = opts.data.development;
 
         this.element = opts.element;
 
         // Preprocessing (should not be done by this component)
-        this.universities = this.universities.filter(d => d.year == "2015");
+        // this.universities = this.universities.filter(d => d.year == "2015");
 
-        // Global attributes
+        // Global attributes    
         this.projection = d3.geoAlbersUsa();
         this.path = d3.geoPath().projection(this.projection);
 
@@ -56,7 +55,7 @@ class MapView {
                             state_companies.push(this.companies[i]);
                     }
                     console.log(state_companies);
-                     this.drawTalentLayer();
+                     // this.drawTalentLayer();
                      this.stateClickCb();
                 });
 
