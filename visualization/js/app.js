@@ -8,6 +8,7 @@ var promises = [
     d3.csv(_url+"stability/Stability.csv"),
     d3.csv(_url+"talent/talent.csv"),
     d3.csv(_url+"development/development.csv")
+    d3.csv(_url+"ranks/ranks.csv"),
 ];
 
 Promise.all(promises).then(function(files) {
@@ -19,6 +20,7 @@ Promise.all(promises).then(function(files) {
             stability: files[2],
             talent: files[3],
             development: files[4],
+            ranks: files[5],
         } 
     }
     
