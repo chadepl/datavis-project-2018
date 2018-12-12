@@ -1,13 +1,13 @@
 var layer_on = false;
 
 var _url = 'http://localhost:8888/raw_data/';
-
+var map;
 var promises = [
     d3.json(_url+"geographic/us_states.json"),
     d3.csv(_url+"population/population.csv"),
     d3.csv(_url+"stability/Stability.csv"),
     d3.csv(_url+"talent/talent.csv"),
-    d3.csv(_url+"development/development.csv")
+    d3.csv(_url+"development/development.csv"),
     d3.csv(_url+"ranks/ranks.csv"),
 ];
 
@@ -37,6 +37,10 @@ Promise.all(promises).then(function(files) {
     //             layer_on = !layer_on;
     //         }});
 })
+
+$("#show_pop").click(function(){
+    map.drawPopulationLayer();
+});
 
 // callbacks
 

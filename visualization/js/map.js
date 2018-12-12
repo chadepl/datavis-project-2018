@@ -7,6 +7,7 @@ class MapView {
         this.stability = opts.data.stability;
         this.talent = opts.data.talent;
         this.development = opts.data.development;
+        this.ranks = opts.data.ranks;
 
         this.element = opts.element;
 
@@ -29,7 +30,6 @@ class MapView {
             // .attr("height", height);
 
         this.drawMap();
-
         // process the other datasets and store them in a convenient way?
         this.layers = [];
 
@@ -37,10 +37,22 @@ class MapView {
 
     drawMap(){
 
-        var states = topojson.feature(this.geometry, this.geometry.objects.cb_2014_us_state_500k).features;
+        this.states = topojson.feature(this.geometry, this.geometry.objects.cb_2014_us_state_500k).features;
+
+        for(var i = 0 ; i < this.ranks.length ; i++){
+            for(var j = 0 ; j < this.states.length ; j++){
+                var jsonState = this.states[j].properties.NAME;
+                // console.log(this.ranks[i].State);
+                if(this.ranks[i].State == jsonState.toUpperCase()){
+                    this.states[j].properties.POP_RANK = this.ranks[i].pop;
+                    break;
+                }
+            }
+        }
+
 
         var states_poly = this.svg.selectAll("path")
-            .data(states)
+            .data(this.states)
             .enter()
             .append("path")
                 .attr("stroke", "black")
@@ -48,14 +60,14 @@ class MapView {
                 .attr("stroke-linejoin", "round")
                 .attr("d", this.path)
                 .on("click", d => {
-                    console.log(d.properties.GEOID + ": " + d.properties.NAME);
-                    var state_companies = [];
-                    for (var i = 0; i < this.companies.length; i++){
-                        if (this.companies[i].state == d.properties.STUSPS) 
-                            state_companies.push(this.companies[i]);
-                    }
-                    console.log(state_companies);
-                     // this.drawTalentLayer();
+                    // console.log(d.properties.GEOID + ": " + d.properties.NAME);
+                    // var state_companies = [];
+                    // for (var i = 0; i < this.companies.length; i++){
+                    //     if (this.companies[i].state == d.properties.STUSPS) 
+                    //         state_companies.push(this.companies[i]);
+                    // }
+                    // console.log(state_companies);
+                    //  this.drawTalentLayer();
                      this.stateClickCb();
                 });
 
@@ -66,6 +78,20 @@ class MapView {
     // Layer 1: population
 
     drawPopulationLayer(){
+        console.log("draw population");
+        this.svg.selectAll("path")
+            .style("fill", function(d) {
+                // Get data value
+                console.log(d);
+                var value = d.properties.POP_RANK;
+                if (value) {
+                    //If value exists…
+                    return "rgba(0,184,148, " + value/50+ ")";
+                } else {
+                    //If value is undefined…
+                    return "rgb(213,222,217)";
+                }
+            });
 
     }
 
@@ -86,7 +112,6 @@ class MapView {
     // Layer 3: talent
 
     drawTalentLayer(){
-
         this.svg.selectAll(".university")
             .data(this.universities)
             .enter()
@@ -111,7 +136,6 @@ class MapView {
     }
 
     // Layer 4: location
-
     drawLocationLayer(){
 
     }
