@@ -42,6 +42,18 @@ $("#show_pop").click(function(){
     map.drawPopulationLayer();
 });
 
+$("#show_stab").click(function(){
+    map.drawStabilityLayer();
+});
+
+$("#show_dev").click(function(){
+    map.drawDevelopmentLayer();
+});
+
+$("#show_tal").click(function(){
+    map.drawTalentLayer();
+});
+
 // callbacks
 
 var stateClickCb = function(){

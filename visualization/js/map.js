@@ -45,6 +45,9 @@ class MapView {
                 // console.log(this.ranks[i].State);
                 if(this.ranks[i].State == jsonState.toUpperCase()){
                     this.states[j].properties.POP_RANK = this.ranks[i].pop;
+                    this.states[j].properties.STAB_RANK = this.ranks[i].stability;
+                    this.states[j].properties.DEV_RANK = this.ranks[i].dev;
+                    this.states[j].properties.TAL_RANK = this.ranks[i].talent;
                     break;
                 }
             }
@@ -82,7 +85,6 @@ class MapView {
         this.svg.selectAll("path")
             .style("fill", function(d) {
                 // Get data value
-                console.log(d);
                 var value = d.properties.POP_RANK;
                 if (value) {
                     //If value exists…
@@ -96,13 +98,40 @@ class MapView {
     }
 
     removePopulationLayer(){
-
     }
 
     // Layer 2: economic / stability
 
     drawStabilityLayer(){
+        console.log("draw stability");
+        this.svg.selectAll("path")
+            .style("fill", function(d) {
+                // Get data value
+                var value = d.properties.STAB_RANK;
+                if (value) {
+                    //If value exists…
+                    return "rgba(0,184,148, " + value/50+ ")";
+                } else {
+                    //If value is undefined…
+                    return "rgb(213,222,217)";
+                }
+            });
+    }
 
+    drawDevelopmentLayer(){
+        console.log("draw stability");
+        this.svg.selectAll("path")
+            .style("fill", function(d) {
+                // Get data value
+                var value = d.properties.DEV_RANK;
+                if (value) {
+                    //If value exists…
+                    return "rgba(0,184,148, " + value/50+ ")";
+                } else {
+                    //If value is undefined…
+                    return "rgb(213,222,217)";
+                }
+            });
     }
 
     removeStabilityLayer(){
@@ -112,23 +141,38 @@ class MapView {
     // Layer 3: talent
 
     drawTalentLayer(){
-        this.svg.selectAll(".university")
-            .data(this.universities)
-            .enter()
-            .append("circle")
-            .attr("class", "university")
-            .attr("cx", d => {
-                return this.projection([d.lng, d.lat])[0];
-            })
-            .attr("cy", d => {
-                return this.projection([d.lng, d.lat])[1];
-            })
-            .attr("r", d => {                
-                return 5;
-            })
-            .attr("stroke", "black")
-            .attr("fill", "white")
-            .on("click", d => console.log(d.institution + ": " + d.influence));
+        console.log("draw talent");
+        this.svg.selectAll("path")
+            .style("fill", function(d) {
+                // Get data value
+                var value = d.properties.TAL_RANK;
+                if (value) {
+                    //If value exists…
+                    return "rgba(0,184,148, " + value/50+ ")";
+                } else {
+                    //If value is undefined…
+                    return "rgb(213,222,217)";
+                }
+            });
+        // this.svg.selectAll(".university")
+        //     .data(this.universities)
+        //     .enter()
+        //     .append("circle")
+        //     .attr("class", "university")
+        //     .attr("cx", d => {
+        //         return this.projection([d.lng, d.lat])[0];
+        //     })
+        //     .attr("cy", d => {
+        //         return this.projection([d.lng, d.lat])[1];
+        //     })
+        //     .attr("r", d => {                
+        //         return 5;
+        //     })
+        //     .attr("stroke", "black")
+        //     .attr("fill", "white")
+        //     .on("click", d => console.log(d.institution + ": " + d.influence));
+
+
     }
 
     removeTalentLayer(){
