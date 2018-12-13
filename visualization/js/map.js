@@ -41,8 +41,10 @@ class MapView {
         var stateNames = this.ranks.map( s =>{
             return s.state;
         })
+        console.log(this.states);
         for(var i = 0 ; i < this.states.length ; i++){
             if(!stateNames.includes(this.states[i].properties.NAME.toUpperCase())){
+                console.log(this.states[i].properties.NAME.toUpperCase());
                 this.states.splice(i,1);
             }
         }
@@ -54,7 +56,8 @@ class MapView {
                         "population": this.ranks[i].population,
                         "stability": this.ranks[i].stability,
                         "development": this.ranks[i].development,
-                        "talent": this.ranks[i].talent
+                        "talent": this.ranks[i].talent,
+                        "total": 1
                     };
                     break;
                 }
@@ -67,6 +70,7 @@ class MapView {
             .enter()
             .append("path")
                 .attr("stroke", "black")
+                .attr("class", "state")
                 .attr("fill", "white")
                 .attr("stroke-linejoin", "round")
                 .attr("d", this.path)
@@ -87,6 +91,46 @@ class MapView {
     // Layers: these correspond to each one of the 4 dimentions of the index
 
     // Layer 1: population
+
+    updateRanksLayer(pop, tal, dev, stab){
+        var numChecked = 0;
+        numChecked = pop ? numChecked+1 : numChecked;
+        numChecked = tal ? numChecked+1 : numChecked;
+        numChecked = dev ? numChecked+1 : numChecked;
+        numChecked = stab ? numChecked+1: numChecked;
+
+        for(var i = 0 ; i < this.ranks.length ; i++){
+            for(var j = 0 ; j < this.states.length ; j++){
+                var state = this.states[j].properties.NAME;
+                if(this.ranks[i].state == state.toUpperCase()){
+                    this.states[j].properties.ranks.total = 0.0;
+                    if(pop)
+                        this.states[j].properties.ranks.total += this.ranks[i].population / numChecked
+                    if(tal)
+                        this.states[j].properties.ranks.total += this.ranks[i].talent / numChecked
+                    if(dev)
+                        this.states[j].properties.ranks.total += this.ranks[i].development / numChecked
+                    if(stab)
+                        this.states[j].properties.ranks.total += this.ranks[i].stability / numChecked
+                    break;
+                }
+            }    
+        }
+
+        this.svg.selectAll(".state")
+            .style("fill", function(d) {
+                // Get data value
+                console.log(d);
+                var value = d.properties.ranks.total;
+                if (value) {
+                    //If value exists…
+                    return "rgba(0,184,148, " + value/50+ ")";
+                } else {
+                    //If value is undefined…
+                    return "rgb(213,222,217)";
+                }
+            });
+    }
 
     drawPopulationLayer(){
         console.log("draw population");

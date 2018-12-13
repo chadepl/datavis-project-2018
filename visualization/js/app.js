@@ -48,24 +48,34 @@ Promise.all(promises).then(function(files) {
 
 })
 
-$("#show_pop").click(function(){
-    map.drawPopulationLayer();
+$(".rank_toggle").change(function() {
+
+    var popChecked = $("#show_pop").is(":checked")
+    var talChecked = $("#show_tal").is(":checked")
+    var devChecked = $("#show_dev").is(":checked")
+    var stabChecked = $("#show_stab").is(":checked")
+    map.updateRanksLayer(popChecked, talChecked, devChecked, stabChecked);
 });
 
-$("#show_stab").click(function(){
-    map.drawStabilityLayer();
-});
+// $("#show_dev").change(function() {
+//     if(this.checked) {
+//         map.drawDevelopmentLayer();
+//     }
+// });
 
-$("#show_dev").click(function(){
-    map.drawDevelopmentLayer();
-});
+// $("#show_stab").change(function() {
+//     if(this.checked) {
+//         map.drawStabilityLayer();
+//     }
+// });
 
-$("#show_tal").click(function(){
-    map.drawTalentLayer();
-});
+// $("#show_tal").change(function() {
+//     if(this.checked) {
+//        map.drawTalentLayer();
+//     }
+// });
 
 // callbacks
-
 var stateClickCb = function(state){
     console.log("cb");
     if(sidePaneMode == "radar"){
