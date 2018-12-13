@@ -14,7 +14,7 @@ var promises = [
 
 Promise.all(promises).then(function(files) {
     let mapOpts = {
-        element: "#map",
+        element: document.querySelector("#map"),
         data: {
             geometry: files[0],
             population: files[1],

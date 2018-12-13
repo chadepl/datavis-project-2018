@@ -7,7 +7,7 @@ class Radar {
             .filter(d => d.key != opts.objectId)
             .map(d => d.key);
 
-        this.scoresDomain = [1, 50]; // TODO: check domain
+        this.scoresDomain = [0, 50]; // TODO: check domain
         /*console.log(this.data.reduce((a,b) => {
             let arr1 = d3.entries(a)
                 .filter(o => o.key != "state");
@@ -59,7 +59,7 @@ class Radar {
             .attr("class", "radar-area")
             .attr("transform", "translate("+(this.radarWidth/2)+","+(this.radarHeight/2)+")");
 
-        this.featuresScale = d3.scaleBand().domain(this.features).range([0, 2 * Math.PI]);
+        this.featuresScale = d3.scalePoint().domain(this.features).range([0, 2 * Math.PI - (this.features.length - 1) * (2 * Math.PI / this.features.length)]);
         this.scoresScale = d3.scaleLinear().domain(this.scoresDomain).range([this.radius, 0]); 
         this.statesScale = d3.scaleOrdinal().domain(this.data.map(d => d.state)).range(d3.schemeCategory10); // TODO: fix
 
@@ -148,13 +148,9 @@ class Radar {
 
         // Axis
 
-        var dataPoints = [];
-        let numSteps = 5;
-        let step = (this.scoresDomain[1] - this.scoresDomain[0])/numSteps;
-        
-        for(var i = 0; i < numSteps; i++){
-            dataPoints.push((i * step) + step);
-        } 
+        var dataPoints = d3.range(this.scoresDomain[0], this.scoresDomain[1], 10);
+
+        console.log(dataPoints);
 
         this.chart.selectAll(".radar-guide-line").data(dataPoints).enter()
             .append("path")
@@ -168,7 +164,7 @@ class Radar {
                 endAngle: 2 * Math.PI
             }));
         
-        this.chart.selectAll(".radar-guide-text").data([0.2, 0.4, 0.6, 0.8, 1]).enter()
+        this.chart.selectAll(".radar-guide-text").data(dataPoints).enter()
             .append("text")
             .attr("x",this.scoresScale)
             .attr("y",0)
