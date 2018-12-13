@@ -15,19 +15,16 @@ class MapView {
         // this.universities = this.universities.filter(d => d.year == "2015");
 
         // Global attributes    
-        this.projection = d3.geoAlbersUsa();
+        this.width = d3.select(this.element).node().getBoundingClientRect().width;
+        this.height = d3.select(this.element).node().getBoundingClientRect().height;
+        
+        this.projection = d3.geoAlbersUsa().scale(900);
         this.path = d3.geoPath().projection(this.projection);
 
-        var containerWidth = d3.select('#map_idiom').style('width').slice(0, -2);
-
-        // this should be responsive
-        var width = containerWidth,
-            height = 600;
-
-        this.svg = d3.select(this.element + " svg");
-            // .append("svg")
-            // .attr("width", width)
-            // .attr("height", height);
+        this.svg = d3.select(this.element)
+             .append("svg")
+             .attr("width", this.width)
+             .attr("height", this.height);
 
         this.drawMap();
         // process the other datasets and store them in a convenient way?
