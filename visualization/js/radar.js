@@ -1,26 +1,27 @@
 class Radar {
     constructor (opts) {
+        
         this.element = opts.element;
         this.data = opts.data;
-        this.features = opts.dataFeatures;
+        this.features = d3.entries(this.data)
+            .filter(d => d.key != opts.objectId)
+            .map(d => d.key);
+
         this.scoresDomain = [0, 1]; // TODO: check domain
         console.log(opts);
 
         // General variables
-        this.pointsToDisplay = [];
-        this.width = opts.containerDimensions[0];
-        this.height = opts.containerDimensions[1]; 
-        console.log(this.element);
-        this.svg = d3.select("#radar svg")
-        // console.log(this.svg);
-
-        // this.svg.append("rect")
-        //     .attr("x", 0)
-        //     .attr("y", 0)
-        //     .attr("width", this.width)
-        //     .attr("height", this.height)
-        //     .attr("fill", "None")
-        //     // .attr("stroke", "black");
+        this.pointsToDisplay = []; //var x = $("#typehead").parent().width();
+        this.width = d3.select(this.element).node().getBoundingClientRect().width; //opts.containerDimensions[0];
+        this.height = d3.select(this.element).node().getBoundingClientRect().height; //opts.containerDimensions[1]; 
+        
+        console.log(d3.select(this.element).node().getBoundingClientRect());
+        console.log(this.width + ", " + this.height);
+        
+        this.svg = d3.select(this.element)
+            .append("svg")
+            .attr("width", this.width)
+            .attr("height",  this.height);
 
         // Title area variables
 
