@@ -41,19 +41,15 @@ class MapView {
         var stateNames = this.ranks.map( s =>{
             return s.state;
         })
-        console.log(this.ranks);
         for(var i = 0 ; i < this.states.length ; i++){
             if(!stateNames.includes(this.states[i].properties.NAME.toUpperCase())){
                 this.states.splice(i,1);
-            } else{
-                console.log(this.states[i].properties.NAME);
             }
         }
         for(var i = 0 ; i < this.ranks.length ; i++){
             for(var j = 0 ; j < this.states.length; j++){
                 var jsonState = this.states[j].properties.NAME;
                 if(this.ranks[i].state == jsonState.toUpperCase()){
-                    console.log("hi");
                     this.states[j].properties.ranks = {
                         "population": this.ranks[i].population,
                         "stability": this.ranks[i].stability,
@@ -64,7 +60,6 @@ class MapView {
                 }
             }
         }
-        console.log(this.states);
 
 
         var states_poly = this.svg.selectAll("path")
@@ -84,7 +79,6 @@ class MapView {
                     // }
                     // console.log(state_companies);
                     //  this.drawTalentLayer();
-                    console.log(d);
                     this.stateClickCb(d);
                 });
 
@@ -99,7 +93,6 @@ class MapView {
         this.svg.selectAll("path")
             .style("fill", function(d) {
                 // Get data value
-                console.log(d);
                 var value = d.properties.ranks.population;
                 if (value) {
                     //If value exists…
@@ -211,7 +204,6 @@ class MapView {
             geometries: this.us_counties.objects.tl_2015_us_county.geometries.filter(g => (this.cnbc_best_cities.map(d => d.city)).includes(g.properties.NAME))
         };
         
-        console.log(this.us_counties);
 
         this.svg.selectAll(".cities")
             .data(topojson.feature(this.us_counties, this.us_counties.objects.top_cities).features)
