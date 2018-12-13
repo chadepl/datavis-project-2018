@@ -74,7 +74,7 @@ $(".rank_toggle").change(function() {
 });
 
 $(".dd_icon").click(function(){
-    $(this).next().next().tggle();
+    $(this).next().next().toggle();
 });
 
 // $("#show_dev").change(function() {
