@@ -10,19 +10,17 @@ class Radar {
         this.pointsToDisplay = [];
         this.width = opts.containerDimensions[0];
         this.height = opts.containerDimensions[1]; 
-        
-        this.svg = d3.select(this.element)
-            .append("svg")
-            .attr("width", this.width)
-            .attr("height",  this.height);
+        console.log(this.element);
+        this.svg = d3.select("#radar svg")
+        // console.log(this.svg);
 
-        this.svg.append("rect")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", this.width)
-            .attr("height", this.height)
-            .attr("fill", "None")
-            .attr("stroke", "black");
+        // this.svg.append("rect")
+        //     .attr("x", 0)
+        //     .attr("y", 0)
+        //     .attr("width", this.width)
+        //     .attr("height", this.height)
+        //     .attr("fill", "None")
+        //     // .attr("stroke", "black");
 
         // Title area variables
 

@@ -27,16 +27,31 @@ Promise.all(promises).then(function(files) {
     map = new MapView(opts);
     map.setStateClickCb(stateClickCb);
 
-    // d3.select(".map-idiom")
-    //     .on("click", d => {
-    //         if(!layer_on){
-    //             map.drawCNBCBestCitiesLayer();
-    //             layer_on = !layer_on;
-    //         }else{
-    //             map.removeCNBCBestCitiesLayer();
-    //             layer_on = !layer_on;
-    //         }});
+    console.log(files[5]);
+    var colNames = d3.entries(files[5][0])
+        .filter(d => d.key != "state")
+        .map(k => k.key);
+    var radarOpts = {
+        element: "#radar",
+        containerDimensions: [600,600],
+        dataFeatures: colNames,
+        data: files[5]
+    }
+
+    var radar = new Radar(radarOpts);
+
+    // svg.selectAll("circle")
+    //     .data(cities).enter()
+    //     .append("circle")
+    //     .attr("cx", (d, i) => (i + 1) * 750/cities.length)
+    //     .attr("cy", 300/2)
+    //     .attr("r", 10)
+    //     .attr("fill", "black")
+    //     .on("click", function(d){radar.drawPoint(d)});
 })
+
+
+
 
 $("#show_pop").click(function(){
     map.drawPopulationLayer();

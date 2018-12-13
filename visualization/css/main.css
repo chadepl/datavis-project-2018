@@ -40,7 +40,13 @@
   border-bottom-right-radius: 5px;
 }
 
-#map{
+#radar svg{
+  display: inline-block;
+  margin: 0 auto;
+  margin-top: -35px
+}
+
+#map, #radar{
 	height: 600px;
 }
 
@@ -56,7 +62,7 @@
   margin-bottom: 20px
 }
 
-#filters, #radar{
+#filters{
   height: 290px;
 }
 

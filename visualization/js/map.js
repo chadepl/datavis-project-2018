@@ -38,20 +38,34 @@ class MapView {
     drawMap(){
 
         this.states = topojson.feature(this.geometry, this.geometry.objects.cb_2014_us_state_500k).features;
-
+        var stateNames = this.ranks.map( s =>{
+            return s.state;
+        })
+        console.log(this.states);
+        for(var i = 0 ; i < this.states.length ; i++){
+            if(!stateNames.includes(this.states[i].properties.NAME.toUpperCase())){
+                this.states.splice(i,1);
+            } else{
+                console.log(this.states[i].properties.NAME);
+            }
+        }
+        console.log(this.states);
         for(var i = 0 ; i < this.ranks.length ; i++){
-            for(var j = 0 ; j < this.states.length ; j++){
+            for(var j = 0 ; j < this.states.length; j++){
                 var jsonState = this.states[j].properties.NAME;
-                // console.log(this.ranks[i].State);
-                if(this.ranks[i].State == jsonState.toUpperCase()){
-                    this.states[j].properties.POP_RANK = this.ranks[i].pop;
-                    this.states[j].properties.STAB_RANK = this.ranks[i].stability;
-                    this.states[j].properties.DEV_RANK = this.ranks[i].dev;
-                    this.states[j].properties.TAL_RANK = this.ranks[i].talent;
+                if(this.ranks[i].state == jsonState.toUpperCase()){
+                    console.log("hi");
+                    this.states[j].properties.ranks = {
+                        "population": this.ranks[i].population,
+                        "stability": this.ranks[i].stability,
+                        "development": this.ranks[i].development,
+                        "talent": this.ranks[i].talent
+                    };
                     break;
                 }
             }
         }
+        console.log(this.states);
 
 
         var states_poly = this.svg.selectAll("path")
@@ -71,7 +85,8 @@ class MapView {
                     // }
                     // console.log(state_companies);
                     //  this.drawTalentLayer();
-                     this.stateClickCb();
+                    console.log(d);
+                    this.stateClickCb(d);
                 });
 
     }
@@ -85,7 +100,8 @@ class MapView {
         this.svg.selectAll("path")
             .style("fill", function(d) {
                 // Get data value
-                var value = d.properties.POP_RANK;
+                console.log(d);
+                var value = d.properties.ranks.population;
                 if (value) {
                     //If value exists…
                     return "rgba(0,184,148, " + value/50+ ")";
@@ -107,7 +123,7 @@ class MapView {
         this.svg.selectAll("path")
             .style("fill", function(d) {
                 // Get data value
-                var value = d.properties.STAB_RANK;
+                var value = d.properties.ranks.stability;
                 if (value) {
                     //If value exists…
                     return "rgba(0,184,148, " + value/50+ ")";
@@ -123,7 +139,7 @@ class MapView {
         this.svg.selectAll("path")
             .style("fill", function(d) {
                 // Get data value
-                var value = d.properties.DEV_RANK;
+                var value = d.properties.ranks.development;
                 if (value) {
                     //If value exists…
                     return "rgba(0,184,148, " + value/50+ ")";
@@ -145,7 +161,7 @@ class MapView {
         this.svg.selectAll("path")
             .style("fill", function(d) {
                 // Get data value
-                var value = d.properties.TAL_RANK;
+                var value = d.properties.ranks.talent;
                 if (value) {
                     //If value exists…
                     return "rgba(0,184,148, " + value/50+ ")";

@@ -15,15 +15,17 @@
 	</div>
 	<div class="container" id="vis">
 		<div class="row">
-			<div id="map" class="container eight columns">
+			<div id="map" class="container nine columns">
 				<svg id="map_idiom" width="860" height="600"></svg>
 			</div>
 
-			<div class="container four columns left">
+			<div class="three columns left">
 				<div id="radar">
-					Radar
+						<svg class="radar_idiom" width="600" height="600"></svg>
 				</div>
-				<div id="filters">
+			</div>
+		</div>
+		<div id="filters">
 					Filters
 					<br>
 					<button id="show_pop">Show Population</button>
@@ -33,15 +35,13 @@
 					<button id="show_tal">Show Talent</button>
 					<br>
 					<button id="show_dev">Show Development</button>
-
 				</div>
-			</div>
-		</div>
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://d3js.org/d3.v5.min.js"></script>
 	<script src="https://d3js.org/topojson.v2.min.js"></script>
-	<script src="./js/app.js"></script>
 	<script src="./js/map.js"></script>
+	<script src="./js/radar.js"></script>
+	<script src="./js/app.js"></script>
 </body>
 </html>
