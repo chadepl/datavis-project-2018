@@ -1,4 +1,5 @@
 var layer_on = false;
+var sidePaneMode = "radar";
 
 var _url = 'http://localhost:8888/raw_data/';
 var map;
@@ -67,8 +68,9 @@ $("#show_tal").click(function(){
 
 var stateClickCb = function(state){
     console.log("cb");
-    if(radarMode){
-
+    if(sidePaneMode == "radar"){
+        console.log(state);
+        radar.
     }else if(detailMode){
 
     }
