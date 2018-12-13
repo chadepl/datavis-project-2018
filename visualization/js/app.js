@@ -2,7 +2,7 @@ var layer_on = false;
 var sidePaneMode = "radar";
 
 var _url = 'http://localhost:8888/raw_data/';
-var map;
+var map, radar;
 var promises = [
     d3.json("../../raw_data/geographic/us_states.json"),
     d3.csv("../../raw_data/population/population.csv"),
@@ -25,7 +25,7 @@ Promise.all(promises).then(function(files) {
         } 
     }
     
-    var map = new MapView(mapOpts);
+    map = new MapView(mapOpts);
     map.setStateClickCb(stateClickCb);
 
     // d3.select(".map-idiom")
@@ -44,7 +44,7 @@ Promise.all(promises).then(function(files) {
         objectId: "state"
     };
 
-    var radar = new Radar(radarOpts);
+    radar = new Radar(radarOpts);
 
 })
 
@@ -70,9 +70,9 @@ var stateClickCb = function(state){
     console.log("cb");
     if(sidePaneMode == "radar"){
         console.log(state);
-        radar.
+        radar.drawPoint(state);
     }else if(detailMode){
-
+        console.log("cb");
     }
     // can call the radar stuff here
 }
