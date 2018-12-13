@@ -19,9 +19,9 @@ class Radar {
         console.log(this.features);
 
         // General variables
-        this.pointsToDisplay = []; //var x = $("#typehead").parent().width();
-        this.width = d3.select(this.element).node().getBoundingClientRect().width; //opts.containerDimensions[0];
-        this.height = d3.select(this.element).node().getBoundingClientRect().height; //opts.containerDimensions[1]; 
+        this.pointsToDisplay = []; 
+        this.width = d3.select(this.element).node().getBoundingClientRect().width; 
+        this.height = d3.select(this.element).node().getBoundingClientRect().height; 
         
         console.log(d3.select(this.element).node().getBoundingClientRect());
         console.log(this.width + ", " + this.height);

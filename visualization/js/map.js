@@ -14,17 +14,31 @@ class MapView {
         // Preprocessing (should not be done by this component)
         // this.universities = this.universities.filter(d => d.year == "2015");
 
+        // Geometry related attributes
+        this.states = topojson.feature(this.geometry, this.geometry.objects.cb_2014_us_state_500k).features;
+        this.stateNames = this.ranks.map( s => s.state);
+        console.log(this.stateNames);
+
         // Global attributes    
         this.width = d3.select(this.element).node().getBoundingClientRect().width;
         this.height = d3.select(this.element).node().getBoundingClientRect().height;
         
-        this.projection = d3.geoAlbersUsa().scale(900);
+        this.projection = d3.geoAlbersUsa()
+            .scale(800)
+            .translate([this.width/2, this.height/2]);
         this.path = d3.geoPath().projection(this.projection);
 
         this.svg = d3.select(this.element)
              .append("svg")
              .attr("width", this.width)
              .attr("height", this.height);
+
+        // Color scales 
+
+        this.indexColorScale = d3.scaleSequential(d3.interpolateInferno).domain([1, 50]);
+
+        // Data related attributes
+        this.indexToDisplay = [];
 
         this.drawMap();
         // process the other datasets and store them in a convenient way?
@@ -34,13 +48,9 @@ class MapView {
 
     drawMap(){
 
-        this.states = topojson.feature(this.geometry, this.geometry.objects.cb_2014_us_state_500k).features;
-        var stateNames = this.ranks.map( s =>{
-            return s.state;
-        })
-        console.log(this.states);
-        for(var i = 0 ; i < this.states.length ; i++){
-            if(!stateNames.includes(this.states[i].properties.NAME.toUpperCase())){
+        
+        /*for(var i = 0 ; i < this.states.length ; i++){
+            if(!this.stateNames.includes(this.states[i].properties.NAME.toUpperCase())){
                 console.log(this.states[i].properties.NAME.toUpperCase());
                 this.states.splice(i,1);
             }
@@ -59,10 +69,10 @@ class MapView {
                     break;
                 }
             }
-        }
+        }*/
 
 
-        var states_poly = this.svg.selectAll("path")
+        this.states_poly = this.svg.selectAll("path")
             .data(this.states)
             .enter()
             .append("path")
@@ -87,10 +97,57 @@ class MapView {
 
     // Layers: these correspond to each one of the 4 dimentions of the index
 
+    updateMap(type, elements){
+        if(type == "index"){
+            this.indexToDisplay = elements;
+            this.refreshIndexLayer();
+        }
+    }
+
     // Layer 1: population
 
-    updateRanksLayer(pop, tal, dev, stab){
-        var numChecked = 0;
+    findStateInfo(stateName, data, accessor){
+        for(var i = 0; i < data.length; i++){
+            if(data[i][accessor] == stateName) {
+                return data[i];
+            };
+        }
+    }
+
+    refreshIndexLayer(){
+
+        var data = this.ranks.map(d => {
+            var obj = {"state": d.state};
+            this.indexToDisplay.forEach(index => {
+                var temp = {};
+                temp[index] = d[index];
+                Object.assign(obj, temp);
+            });
+            return obj;
+        })
+
+        // update the data with the average
+
+        data.forEach(d => {
+            var average = 0;
+            d3.entries(d).forEach(i => {
+                if (i.key != "state") average = average + +i.value;
+            })
+            average = average / (d3.entries(d).length - 1);
+            Object.assign(d, {"average": average});
+        })
+
+        //console.log(this.findStateInfo());
+
+        this.states_poly
+            .attr("fill", d => {
+                var color = "None";
+                var stateInfo = this.findStateInfo(d.properties.NAME.toUpperCase(), data, "state");
+                if(stateInfo) color = this.indexColorScale(stateInfo.average)
+                return color;
+            });
+
+        /*var numChecked = 0;
         numChecked = pop ? numChecked+1 : numChecked;
         numChecked = tal ? numChecked+1 : numChecked;
         numChecked = dev ? numChecked+1 : numChecked;
@@ -126,7 +183,7 @@ class MapView {
                     //If value is undefined…
                     return "rgb(213,222,217)";
                 }
-            });
+            });*/
     }
 
     drawPopulationLayer(){
