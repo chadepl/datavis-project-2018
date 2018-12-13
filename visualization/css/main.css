@@ -27,6 +27,27 @@
   cursor: pointer;
 }
 
+
+.filter_container{
+  display: none;
+}
+
+
+.dd_icon{
+  width: 20px;
+}
+
+.dd_icon:hover{
+  cursor: pointer;
+}
+
+.filter_container{
+  padding: 20px;
+  border: 1px solid #ccc;
+  width: 70%;
+  margin: 10px auto;
+}
+
 #map-toggle{
   margin-right: 0;
   border-right: none;

@@ -28,15 +28,31 @@ Promise.all(promises).then(function(files) {
     map = new MapView(mapOpts);
     map.setStateClickCb(stateClickCb);
 
-    // d3.select(".map-idiom")
-    //     .on("click", d => {
-    //         if(!layer_on){
-    //             map.drawCNBCBestCitiesLayer();
-    //             layer_on = !layer_on;
-    //         }else{
-    //             map.removeCNBCBestCitiesLayer();
-    //             layer_on = !layer_on;
-    //         }});
+    var popKeys = Object.keys(files[1][0]);
+    var stabKeys = Object.keys(files[2][0]);
+    var talKeys = Object.keys(files[3][0]);
+    var devKeys = Object.keys(files[4][0]);
+
+    var markup = "";
+    popKeys.forEach(function(c){
+        markup += "<input type='checkbox' name='" + c + "'>"+c+"</input>";
+    })
+    $("#pop_break").after("<div class='filter_container'>"+markup + "</div>");
+    var markup = "";
+    stabKeys.forEach(function(c){
+        markup += "<input type='checkbox' name='" + c + "'>"+c+"</input>";
+    })
+    $("#stab_break").after("<div class='filter_container'>"+markup + "</div>");
+    var markup = "";
+    talKeys.forEach(function(c){
+        markup += "<input type='checkbox' name='" + c + "'>"+c+"</input>";
+    })
+    $("#tal_break").after("<div class='filter_container'>"+markup + "</div>");
+    var markup = "";
+    devKeys.forEach(function(c){
+        markup += "<input type='checkbox' name='" + c + "'>"+c+"</input>";
+    })
+    $("#dev_break").after("<div class='filter_container'>"+markup + "</div>");
 
     let radarOpts = {
         element: document.querySelector("#radar"),
@@ -55,6 +71,10 @@ $(".rank_toggle").change(function() {
     var devChecked = $("#show_dev").is(":checked")
     var stabChecked = $("#show_stab").is(":checked")
     map.updateRanksLayer(popChecked, talChecked, devChecked, stabChecked);
+});
+
+$(".dd_icon").click(function(){
+    $(this).next().next().tggle();
 });
 
 // $("#show_dev").change(function() {
