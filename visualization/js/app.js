@@ -65,12 +65,13 @@ Promise.all(promises).then(function(files) {
 })
 
 $(".rank_toggle").change(function() {
-
-    var popChecked = $("#show_pop").is(":checked")
-    var talChecked = $("#show_tal").is(":checked")
-    var devChecked = $("#show_dev").is(":checked")
-    var stabChecked = $("#show_stab").is(":checked")
-    map.updateRanksLayer(popChecked, talChecked, devChecked, stabChecked);
+    var indices = [];
+    if($("#show_pop").is(":checked")) indices.push("population");
+    if($("#show_tal").is(":checked")) indices.push("talent");
+    if($("#show_dev").is(":checked")) indices.push("development");
+    if($("#show_stab").is(":checked")) indices.push("stability");
+    
+    map.updateMap("index", indices);
 });
 
 $(".dd_icon").click(function(){
