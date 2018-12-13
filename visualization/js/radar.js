@@ -3,12 +3,20 @@ class Radar {
         
         this.element = opts.element;
         this.data = opts.data;
-        this.features = d3.entries(this.data)
+        this.features = d3.entries(this.data[0])
             .filter(d => d.key != opts.objectId)
             .map(d => d.key);
 
-        this.scoresDomain = [0, 1]; // TODO: check domain
+        this.scoresDomain = [1, 50]; // TODO: check domain
+        /*console.log(this.data.reduce((a,b) => {
+            let arr1 = d3.entries(a)
+                .filter(o => o.key != "state");
+            let arr2 = d3.entries(b)
+                .filter(o => o.key != "state");
+            return arr1.concat(arr2);
+        }));*/
         console.log(opts);
+        console.log(this.features);
 
         // General variables
         this.pointsToDisplay = []; //var x = $("#typehead").parent().width();
@@ -52,8 +60,8 @@ class Radar {
             .attr("transform", "translate("+(this.radarWidth/2)+","+(this.radarHeight/2)+")");
 
         this.featuresScale = d3.scaleBand().domain(this.features).range([0, 2 * Math.PI]);
-        this.scoresScale = d3.scaleLinear().domain(this.scoresDomain).range([0, this.radius]); 
-        this.statesScale = d3.scaleOrdinal().domain(this.data.map(d => d.city)).range(d3.schemeCategory10); // TODO: fix
+        this.scoresScale = d3.scaleLinear().domain(this.scoresDomain).range([this.radius, 0]); 
+        this.statesScale = d3.scaleOrdinal().domain(this.data.map(d => d.state)).range(d3.schemeCategory10); // TODO: fix
 
         this.arc = d3.arc();
         this.line = d3.lineRadial();
@@ -67,8 +75,12 @@ class Radar {
 
         var duplicatePoint = false;
 
+        var dataPoint = this.data
+            .filter(d => d.state == point.properties.NAME.toUpperCase())[0]; // It should always find the state!
+        console.log(dataPoint);
+
         this.pointsToDisplay.forEach((d, i) => {
-            if (d.city == point.city) {
+            if (d.state == dataPoint.state) { 
                 this.pointsToDisplay.splice(i, 1);
                 duplicatePoint = true;
             }
@@ -76,7 +88,7 @@ class Radar {
 
         var numberOfStates = this.pointsToDisplay.length;
 
-        if (!duplicatePoint) numberOfStates = this.pointsToDisplay.push(point);
+        if (!duplicatePoint) numberOfStates = this.pointsToDisplay.push(dataPoint);
         
         if (numberOfStates == 3){
             this.pointsToDisplay.shift();
@@ -91,7 +103,7 @@ class Radar {
     drawTitle(){
 
         var titles = this.titleContainer.selectAll(".point-title")
-            .data(this.pointsToDisplay, d => d.city)
+            .data(this.pointsToDisplay, d => d.state)
 
         titles.exit().remove();
 
@@ -103,28 +115,29 @@ class Radar {
             .attr("y", (d, i) => i * 30)
             .attr("dy", "1em")
             .attr("font-size", "2em")
-            .attr("fill",d => this.statesScale(d.city))//d => this.statesScale(d.city))
-            .text(d => d.city);
+            .attr("fill",d => this.statesScale(d.state))//d => this.statesScale(d.state))
+            .text(d => d.state);
     }
 
     drawRadar(){
 
         // TODO: Draw axis layer
+        console.log(this.pointsToDisplay);
 
         var area = d3.lineRadial();            
         area.angle(d => this.featuresScale(d.key));
         area.radius(d => this.scoresScale(d.value));
 
-        var areas = this.chart.selectAll(".radar-area").data(this.pointsToDisplay, d => d.city);
+        var areas = this.chart.selectAll(".radar-area").data(this.pointsToDisplay, d => d.state);
 
         areas.exit().remove();
 
         areas.enter()
             .append("path")
             .attr("class", "radar-area")
-            //.attr("stroke", d => this.statesScale(d.city)) // TODO: check line closing
+            //.attr("stroke", d => this.statesScale(d.state)) // TODO: check line closing
             .attr("fill", d => {
-                var color = d3.color(this.statesScale(d.city)); 
+                var color = d3.color(this.statesScale(d.state)); 
                 color.opacity = 0.5;
                 return color;})
             .attr("d", d => area(d3.entries(d).filter(d => this.features.includes(d.key))));
@@ -135,7 +148,15 @@ class Radar {
 
         // Axis
 
-        this.chart.selectAll(".radar-guide-line").data([0.2, 0.4, 0.6, 0.8, 1]).enter()
+        var dataPoints = [];
+        let numSteps = 5;
+        let step = (this.scoresDomain[1] - this.scoresDomain[0])/numSteps;
+        
+        for(var i = 0; i < numSteps; i++){
+            dataPoints.push((i * step) + step);
+        } 
+
+        this.chart.selectAll(".radar-guide-line").data(dataPoints).enter()
             .append("path")
             .attr("stroke", "gray")
             .attr("stroke-width", "1")
