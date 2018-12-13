@@ -41,7 +41,7 @@ class MapView {
         var stateNames = this.ranks.map( s =>{
             return s.state;
         })
-        console.log(this.states);
+        console.log(this.ranks);
         for(var i = 0 ; i < this.states.length ; i++){
             if(!stateNames.includes(this.states[i].properties.NAME.toUpperCase())){
                 this.states.splice(i,1);
@@ -49,7 +49,6 @@ class MapView {
                 console.log(this.states[i].properties.NAME);
             }
         }
-        console.log(this.states);
         for(var i = 0 ; i < this.ranks.length ; i++){
             for(var j = 0 ; j < this.states.length; j++){
                 var jsonState = this.states[j].properties.NAME;
