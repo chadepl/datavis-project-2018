@@ -48,24 +48,24 @@ Promise.all(promises).then(function(files) {
 
     var markup = "";
     popKeys.forEach(function(c){
-        markup += "<input type='checkbox' name='" + c + "'>"+c+"</input>";
+        markup += "<input class='sub_check' value='"+ c +"' type='radio' name='pop_sub'>"+c+"</input>";
     })
-    $("#pop_break").after("<div class='filter_container'>"+markup + "</div>");
+    $("#pop_break").after("<div class='filter_container'>"+ markup + "</div>");
     var markup = "";
     stabKeys.forEach(function(c){
-        markup += "<input type='checkbox' name='" + c + "'>"+c+"</input>";
+        markup += "<input class='sub_check' value='"+ c +"' type='radio'' name='stab_sub'>"+c+"</input>";
     })
-    $("#stab_break").after("<div class='filter_container'>"+markup + "</div>");
+    $("#stab_break").after("<div class='filter_container'>"+ markup + "</div>");
     var markup = "";
     talKeys.forEach(function(c){
-        markup += "<input type='checkbox' name='" + c + "'>"+c+"</input>";
+        markup += "<input class='sub_check' value='"+ c +"' type='radio' name='tal_sub'>"+c+"</input>";
     })
-    $("#tal_break").after("<div class='filter_container'>"+markup + "</div>");
+    $("#tal_break").after("<div class='filter_container'>"+ markup + "</div>");
     var markup = "";
     devKeys.forEach(function(c){
-        markup += "<input type='checkbox' name='" + c + "'>"+c+"</input>";
+        markup += "<input class='sub_check' value='"+ c +"' type='radio' name='dev_sub'>"+c+"</input>";
     })
-    $("#dev_break").after("<div class='filter_container'>"+markup + "</div>");
+    $("#dev_break").after("<div class='filter_container'>"+ markup + "</div>");
 
     let radarOpts = {
         element: document.querySelector("#radar"),
@@ -78,6 +78,7 @@ Promise.all(promises).then(function(files) {
 })
 
 $(".rank_toggle").change(function() {
+    uncheckAllSubChekcs();
     var indices = [];
     if($("#show_pop").is(":checked")) indices.push("population");
     if($("#show_tal").is(":checked")) indices.push("talent");
@@ -91,23 +92,26 @@ $(".dd_icon").click(function(){
     $(this).next().next().toggle();
 });
 
-// $("#show_dev").change(function() {
-//     if(this.checked) {
-//         map.drawDevelopmentLayer();
-//     }
-// });
+$(document.body).on('change', '.sub_check' ,function(){
+    uncheckAllRanksChecks();
+    var event = {
+        checked: $(this).is(":checked"),
+        col_name: $(this).val()
+    }
+    console.log(event);
+    // send event of change
 
-// $("#show_stab").change(function() {
-//     if(this.checked) {
-//         map.drawStabilityLayer();
-//     }
-// });
+});
 
-// $("#show_tal").change(function() {
-//     if(this.checked) {
-//        map.drawTalentLayer();
-//     }
-// });
+var uncheckAllSubChekcs = function(){
+    $(".filter_container").each(function(){
+        $(this).children().prop('checked', false);
+    });
+}
+
+var uncheckAllRanksChecks = function(){
+    $(".rank_toggle").prop("checked", false);
+}
 
 // callbacks
 var stateClickCb = function(state){
