@@ -1,26 +1,28 @@
 var layer_on = false;
 var sidePaneMode = "radar";
-
+var ranks_meta;
+var _url = 'http://localhost:8888/raw_data/';
 var map, radar;
 var promises = [
     d3.json("../../raw_data/geographic/us_states.json"),
-    d3.csv("../../raw_data/population/population.csv"),
-    d3.csv("../../raw_data/stability/Stability.csv"),
-    d3.csv("../../raw_data/talent/talent.csv"),
-    d3.csv("../../raw_data/development/development.csv"),
-    d3.csv("../../raw_data/ranks/ranks.csv"),
+    d3.csv("../../raw_data/joined_data.csv"),
+    d3.csv("../../raw_data/ranks/ranks_metadata.csv"),
+    d3.csv("../../raw_data/ranks/ranks.csv")
+    //d3.csv("../../raw_data/population/population.csv"),
+    //d3.csv("../../raw_data/stability/Stability.csv"),
+    //d3.csv("../../raw_data/talent/talent.csv"),
+    //d3.csv("../../raw_data/development/development.csv")
 ];
 
 Promise.all(promises).then(function(files) {
+    console.log(files);
     let mapOpts = {
         element: document.querySelector("#map"),
         data: {
             geometry: files[0],
-            population: files[1],
-            stability: files[2],
-            talent: files[3],
-            development: files[4],
-            ranks: files[5],
+            data: files[1],
+            metadata: files[2],
+            ranks: files[3],
         } 
     }
 
@@ -28,37 +30,32 @@ Promise.all(promises).then(function(files) {
     map = new MapView(mapOpts);
     map.setStateClickCb(stateClickCb);
 
+    ranks_meta = files[2];
+    for(var i = 0 ; i < ranks_meta.length ; i++){
+        var rank = ranks_meta[i];
+        if(rank.hierarchy == 'none' && rank.column_id != "state"){
+            $("#filters").append("<input class='rank_toggle' id='" +
+                rank.column_id + "' type='checkbox' name='" +
+                rank.column_id + "' value='" + 
+                rank.column_id + "'>" + rank.column_display_name + 
+                "<img src='https://image.flaticon.com/icons/svg/60/60995.svg' class='dd_icon'><br id='" + 
+                rank.column_id + "_break'><div id='" + rank.column_id + 
+                "_container' class='filter_container'></div>");
+        }
+    }
 
 
-    var popKeys = Object.keys(files[1][0]);
-    var stabKeys = Object.keys(files[2][0]);
-    var talKeys = Object.keys(files[3][0]);
-    var devKeys = Object.keys(files[4][0]);
-
-    var markup = "";
-    popKeys.forEach(function(c){
-        markup += "<input class='sub_check' value='"+ c +"' type='radio' name='pop_sub'>"+c+"</input>";
-    })
-    $("#pop_break").after("<div class='filter_container'>"+ markup + "</div>");
-    var markup = "";
-    stabKeys.forEach(function(c){
-        markup += "<input class='sub_check' value='"+ c +"' type='radio'' name='stab_sub'>"+c+"</input>";
-    })
-    $("#stab_break").after("<div class='filter_container'>"+ markup + "</div>");
-    var markup = "";
-    talKeys.forEach(function(c){
-        markup += "<input class='sub_check' value='"+ c +"' type='radio' name='tal_sub'>"+c+"</input>";
-    })
-    $("#tal_break").after("<div class='filter_container'>"+ markup + "</div>");
-    var markup = "";
-    devKeys.forEach(function(c){
-        markup += "<input class='sub_check' value='"+ c +"' type='radio' name='dev_sub'>"+c+"</input>";
-    })
-    $("#dev_break").after("<div class='filter_container'>"+ markup + "</div>");
+    for(var i = 0 ; i < ranks_meta.length ; i++){
+        var row = ranks_meta[i];
+        if(row.hierarchy != "none" && row.column_id != 'state' && row.enabled == "TRUE"){
+            $("#" + row.hierarchy + "_container").append("<input class='sub_check' value='"+ row.column_id +"' type='radio' name='sub_check'>"+row.column_display_name+"</input>");
+        }
+    }
 
     let radarOpts = {
         element: document.querySelector("#radar"),
-        data: files[5],
+        data: files[1],
+        metadata: files[2],
         objectId: "state"
     };
 
@@ -75,29 +72,29 @@ Promise.all(promises).then(function(files) {
 
 })
 
-$(".rank_toggle").change(function() {
+$(document.body).on('change', '.rank_toggle' ,function(){
     uncheckAllSubChekcs();
+    var rank_names = [];
+    ranks_meta.forEach(r =>{
+        if(r.hierarchy == "none" && r.column_id != 'state'){
+            rank_names.push(r.column_id);
+        }
+    });
     var indices = [];
-    if($("#show_pop").is(":checked")) indices.push("population");
-    if($("#show_tal").is(":checked")) indices.push("talent");
-    if($("#show_dev").is(":checked")) indices.push("development");
-    if($("#show_stab").is(":checked")) indices.push("stability");
-    
-    map.updateMap("index", indices);
+    rank_names.forEach(r =>{
+        if($("#"+r).is(":checked")) indices.push(r);
+    })
+    map.updateMap(indices);
 });
 
-$(".dd_icon").click(function(){
+$(document.body).on('click', '.dd_icon' ,function(){
     $(this).next().next().toggle();
 });
 
 $(document.body).on('change', '.sub_check' ,function(){
     uncheckAllRanksChecks();
-    var event = {
-        checked: $(this).is(":checked"),
-        col_name: $(this).val()
-    }
-    console.log(event);
-    // send event of change
+    console.log($(this).val());
+    map.updateMap([$(this).val()]);
 
 });
 

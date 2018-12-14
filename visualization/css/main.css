@@ -32,6 +32,11 @@
   display: none;
 }
 
+.filter_container input{
+  margin-left: 20px;
+  margin-right: 5px;
+}
+
 
 .dd_icon{
   width: 20px;
