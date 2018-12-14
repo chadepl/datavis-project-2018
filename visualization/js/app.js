@@ -36,11 +36,24 @@ Promise.all(promises).then(function(files) {
 
 
     ranks_meta = files[6];
-    console.log(ranks_meta);
     for(var i = 0 ; i < ranks_meta.length ; i++){
         var rank = ranks_meta[i];
         if(rank.hiererchy == 'none' && rank.column_id != "state"){
-            $("#filters").append("<input class='rank_toggle' id='" + rank.column_id + "' type='checkbox' name='" + rank.column_display_name + "' value='" + rank.column_display_name + "'>" + rank.column_display_name + "<img src='https://image.flaticon.com/icons/svg/60/60995.svg' class='dd_icon'><br id='" + rank.column_id + "_break'>");
+            $("#filters").append("<input class='rank_toggle' id='" +
+                rank.column_id + "' type='checkbox' name='" +
+                rank.column_id + "' value='" + 
+                rank.column_id + "'>" + rank.column_display_name + 
+                "<img src='https://image.flaticon.com/icons/svg/60/60995.svg' class='dd_icon'><br id='" + 
+                rank.column_id + "_break'><div id='" + rank.column_id + 
+                "_container' class='filter_container'></div>");
+        }
+    }
+
+
+    for(var i = 0 ; i < ranks_meta.length ; i++){
+        var row = ranks_meta[i];
+        if(row.hiererchy != "none" && row.column_id != 'state'){
+            $("#" + row.hiererchy + "_container").append("<input class='sub_check' value='"+ row.column_id +"' type='radio' name='" + row.column_id + "_sub'>"+row.column_display_name+"</input>");
         }
     }
 
@@ -90,7 +103,7 @@ $(document.body).on('change', '.rank_toggle' ,function(){
     map.updateMap("index", indices);
 });
 
-$(".dd_icon").click(function(){
+$(document.body).on('click', '.dd_icon' ,function(){
     $(this).next().next().toggle();
 });
 
