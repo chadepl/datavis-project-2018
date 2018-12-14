@@ -8,6 +8,7 @@ class Radar {
             .filter(d => d.key != this.objectId)
             .map(d => d.key);
 
+        // TODO: fix the ranges to consider all minus the objectId
         this.scoresDomain = d3.extent(this.data, d => +d[this.features[0]]); 
 
         // General variables

@@ -24,7 +24,7 @@ class MapView {
         this.height = d3.select(this.element).node().getBoundingClientRect().height;
         
         this.projection = d3.geoAlbersUsa()
-            .scale(800)
+            .scale(1000) // TODO: make this dynamic
             .translate([this.width/2, this.height/2]);
         this.path = d3.geoPath().projection(this.projection);
 
@@ -35,7 +35,7 @@ class MapView {
 
         // Color scales 
 
-        this.indexColorScale = d3.scaleSequential(d3.interpolateInferno).domain([1, 50]);
+        this.indexColorScale = d3.scaleSequential(d3.interpolateGnBu).domain([50, 1]);
 
         // Data related attributes
         this.indexToDisplay = [];
@@ -72,7 +72,7 @@ class MapView {
         }*/
 
 
-        this.states_poly = this.svg.selectAll("path")
+        this.states_poly = this.svg.append("g").selectAll("path")
             .data(this.states)
             .enter()
             .append("path")
@@ -102,6 +102,62 @@ class MapView {
             this.indexToDisplay = elements;
             this.refreshIndexLayer();
         }
+        this.drawLegend("index");
+        this.drawTitle(elements);
+    }
+
+    drawTitle(featuresOnDisplay){
+
+        let text = "Displaying: "; 
+        featuresOnDisplay.forEach(d => text = text + d +  "|");
+
+        const title = this.svg
+        .append("g")
+        .append("text")
+        .attr("x", 10)
+        .attr("y", 35)
+        .attr("font-weight", "bold")
+        .attr("font-size", "2em")
+        .text(text);
+    }
+
+    // Given a feature (column) displays its color map
+    drawLegend(feature){
+
+        const x = d3.scaleLinear()
+            .domain(this.indexColorScale.domain())
+            .rangeRound([0, 260]);
+
+        console.log(this.indexColorScale.domain());
+        
+        const legend = this.svg.append("g")
+            .style("font-size", "0.8rem")
+            .style("font-family", "sans-serif")
+            .attr("transform", "translate("+(this.width/2)+","+(this.height - 40)+")");
+        
+        const label = legend.append("text")
+            .attr("y", -8)
+            .attr("font-weight", "bold")
+            .attr("font-size", "2em")
+            .text("Index Color Scale");
+        
+        const scale = legend.append("g")
+    
+        scale.selectAll("rect")
+            .data(d3.range(1, 50, 1))
+            .enter().append("rect")
+                .attr("height", 15)
+                .attr("x", d => x(d)) // This should be dynamic
+                .attr("width", (260 / 49) * 1.25)
+                .attr("fill", d => this.indexColorScale(d));
+        
+        scale.call(
+        d3.axisBottom(x) // This should be dynamic
+            .tickSize(15)
+        )
+        .select(".domain")
+            .remove();
+     
     }
 
     // Layer 1: population
