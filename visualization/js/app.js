@@ -79,10 +79,6 @@ $(".dd_icon").click(function(){
     $(this).next().next().toggle();
 });
 
-// $(".sub_check").click(function(){
-//     console.log("sub click ");
-// });
-
 $(document.body).on('change', '.sub_check' ,function(){
     uncheckAllRanksChecks();
     var event = {
@@ -93,24 +89,6 @@ $(document.body).on('change', '.sub_check' ,function(){
     // send event of change
 
 });
-
-// $("#show_dev").change(function() {
-//     if(this.checked) {
-//         map.drawDevelopmentLayer();
-//     }
-// });
-
-// $("#show_stab").change(function() {
-//     if(this.checked) {
-//         map.drawStabilityLayer();
-//     }
-// });
-
-// $("#show_tal").change(function() {
-//     if(this.checked) {
-//        map.drawTalentLayer();
-//     }
-// });
 
 var uncheckAllSubChekcs = function(){
     $(".filter_container").each(function(){
