@@ -29,12 +29,6 @@ Promise.all(promises).then(function(files) {
     map = new MapView(mapOpts);
     map.setStateClickCb(stateClickCb);
 
-    // var popKeys = Object.keys(files[1][0]);
-    // var stabKeys = Object.keys(files[2][0]);
-    // var talKeys = Object.keys(files[3][0]);
-    // var devKeys = Object.keys(files[4][0]);
-
-
     ranks_meta = files[6];
     for(var i = 0 ; i < ranks_meta.length ; i++){
         var rank = ranks_meta[i];
@@ -53,30 +47,9 @@ Promise.all(promises).then(function(files) {
     for(var i = 0 ; i < ranks_meta.length ; i++){
         var row = ranks_meta[i];
         if(row.hiererchy != "none" && row.column_id != 'state'){
-            $("#" + row.hiererchy + "_container").append("<input class='sub_check' value='"+ row.column_id +"' type='radio' name='" + row.column_id + "_sub'>"+row.column_display_name+"</input>");
+            $("#" + row.hiererchy + "_container").append("<input class='sub_check' value='"+ row.column_id +"' type='radio' name='sub_check'>"+row.column_display_name+"</input>");
         }
     }
-
-    // var markup = "";
-    // popKeys.forEach(function(c){
-    //     markup += "<input class='sub_check' value='"+ c +"' type='radio' name='pop_sub'>"+c+"</input>";
-    // })
-    // $("#pop_break").after("<div class='filter_container'>"+ markup + "</div>");
-    // var markup = "";
-    // stabKeys.forEach(function(c){
-    //     markup += "<input class='sub_check' value='"+ c +"' type='radio'' name='stab_sub'>"+c+"</input>";
-    // })
-    // $("#stab_break").after("<div class='filter_container'>"+ markup + "</div>");
-    // var markup = "";
-    // talKeys.forEach(function(c){
-    //     markup += "<input class='sub_check' value='"+ c +"' type='radio' name='tal_sub'>"+c+"</input>";
-    // })
-    // $("#tal_break").after("<div class='filter_container'>"+ markup + "</div>");
-    // var markup = "";
-    // devKeys.forEach(function(c){
-    //     markup += "<input class='sub_check' value='"+ c +"' type='radio' name='dev_sub'>"+c+"</input>";
-    // })
-    // $("#dev_break").after("<div class='filter_container'>"+ markup + "</div>");
 
     let radarOpts = {
         element: document.querySelector("#radar"),
@@ -100,7 +73,7 @@ $(document.body).on('change', '.rank_toggle' ,function(){
     rank_names.forEach(r =>{
         if($("#"+r).is(":checked")) indices.push(r);
     })
-    map.updateMap("index", indices);
+    map.updateMap(indices);
 });
 
 $(document.body).on('click', '.dd_icon' ,function(){
@@ -109,12 +82,8 @@ $(document.body).on('click', '.dd_icon' ,function(){
 
 $(document.body).on('change', '.sub_check' ,function(){
     uncheckAllRanksChecks();
-    var event = {
-        checked: $(this).is(":checked"),
-        col_name: $(this).val()
-    }
-    console.log(event);
-    // send event of change
+    console.log($(this).val());
+    map.updateMap([$(this).val()]);
 
 });
 
