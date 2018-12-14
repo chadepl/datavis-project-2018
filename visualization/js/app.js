@@ -32,7 +32,6 @@ Promise.all(promises).then(function(files) {
     ranks_meta = files[2];
     for(var i = 0 ; i < ranks_meta.length ; i++){
         var rank = ranks_meta[i];
-        console.log(rank);
         if(rank.hierarchy == 'none' && rank.column_id != "state"){
             $("#filters").append("<input class='rank_toggle' id='" +
                 rank.column_id + "' type='checkbox' name='" +
@@ -47,7 +46,7 @@ Promise.all(promises).then(function(files) {
 
     for(var i = 0 ; i < ranks_meta.length ; i++){
         var row = ranks_meta[i];
-        if(row.hierarchy != "none" && row.column_id != 'state'){
+        if(row.hierarchy != "none" && row.column_id != 'state' && row.enabled == "TRUE"){
             $("#" + row.hierarchy + "_container").append("<input class='sub_check' value='"+ row.column_id +"' type='radio' name='sub_check'>"+row.column_display_name+"</input>");
         }
     }
