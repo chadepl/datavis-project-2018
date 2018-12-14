@@ -1,6 +1,6 @@
 var layer_on = false;
 var sidePaneMode = "radar";
-
+var ranks_meta;
 var _url = 'http://localhost:8888/raw_data/';
 var map, radar;
 var promises = [
@@ -10,6 +10,7 @@ var promises = [
     d3.csv("../../raw_data/talent/talent.csv"),
     d3.csv("../../raw_data/development/development.csv"),
     d3.csv("../../raw_data/ranks/ranks.csv"),
+    d3.csv("../../raw_data/ranks/ranks_metadata.csv")
 ];
 
 Promise.all(promises).then(function(files) {
@@ -28,31 +29,41 @@ Promise.all(promises).then(function(files) {
     map = new MapView(mapOpts);
     map.setStateClickCb(stateClickCb);
 
-    var popKeys = Object.keys(files[1][0]);
-    var stabKeys = Object.keys(files[2][0]);
-    var talKeys = Object.keys(files[3][0]);
-    var devKeys = Object.keys(files[4][0]);
+    // var popKeys = Object.keys(files[1][0]);
+    // var stabKeys = Object.keys(files[2][0]);
+    // var talKeys = Object.keys(files[3][0]);
+    // var devKeys = Object.keys(files[4][0]);
 
-    var markup = "";
-    popKeys.forEach(function(c){
-        markup += "<input class='sub_check' value='"+ c +"' type='radio' name='pop_sub'>"+c+"</input>";
-    })
-    $("#pop_break").after("<div class='filter_container'>"+ markup + "</div>");
-    var markup = "";
-    stabKeys.forEach(function(c){
-        markup += "<input class='sub_check' value='"+ c +"' type='radio'' name='stab_sub'>"+c+"</input>";
-    })
-    $("#stab_break").after("<div class='filter_container'>"+ markup + "</div>");
-    var markup = "";
-    talKeys.forEach(function(c){
-        markup += "<input class='sub_check' value='"+ c +"' type='radio' name='tal_sub'>"+c+"</input>";
-    })
-    $("#tal_break").after("<div class='filter_container'>"+ markup + "</div>");
-    var markup = "";
-    devKeys.forEach(function(c){
-        markup += "<input class='sub_check' value='"+ c +"' type='radio' name='dev_sub'>"+c+"</input>";
-    })
-    $("#dev_break").after("<div class='filter_container'>"+ markup + "</div>");
+
+    ranks_meta = files[6];
+    console.log(ranks_meta);
+    for(var i = 0 ; i < ranks_meta.length ; i++){
+        var rank = ranks_meta[i];
+        if(rank.hiererchy == 'none'){
+            $("#filters").append("<input class='rank_toggle' id='" + rank.column_id + "' type='checkbox' name='" + rank.column_display_name + "' value='" + rank.column_display_name + "'>" + rank.column_display_name + "<img src='https://image.flaticon.com/icons/svg/60/60995.svg' class='dd_icon'><br id='" + rank.column_id + "_break'>");
+        }
+    }
+
+    // var markup = "";
+    // popKeys.forEach(function(c){
+    //     markup += "<input class='sub_check' value='"+ c +"' type='radio' name='pop_sub'>"+c+"</input>";
+    // })
+    // $("#pop_break").after("<div class='filter_container'>"+ markup + "</div>");
+    // var markup = "";
+    // stabKeys.forEach(function(c){
+    //     markup += "<input class='sub_check' value='"+ c +"' type='radio'' name='stab_sub'>"+c+"</input>";
+    // })
+    // $("#stab_break").after("<div class='filter_container'>"+ markup + "</div>");
+    // var markup = "";
+    // talKeys.forEach(function(c){
+    //     markup += "<input class='sub_check' value='"+ c +"' type='radio' name='tal_sub'>"+c+"</input>";
+    // })
+    // $("#tal_break").after("<div class='filter_container'>"+ markup + "</div>");
+    // var markup = "";
+    // devKeys.forEach(function(c){
+    //     markup += "<input class='sub_check' value='"+ c +"' type='radio' name='dev_sub'>"+c+"</input>";
+    // })
+    // $("#dev_break").after("<div class='filter_container'>"+ markup + "</div>");
 
     let radarOpts = {
         element: document.querySelector("#radar"),
@@ -64,14 +75,22 @@ Promise.all(promises).then(function(files) {
 
 })
 
-$(".rank_toggle").change(function() {
+$(document.body).on('change', '.rank_toggle' ,function(){
     uncheckAllSubChekcs();
+    var rank_names = [];
+    ranks_meta.forEach(r =>{
+        if(r.hiererchy == "none"){
+            rank_names.push(r.column_id);
+        }
+    });
     var indices = [];
-    if($("#show_pop").is(":checked")) indices.push("population");
-    if($("#show_tal").is(":checked")) indices.push("talent");
-    if($("#show_dev").is(":checked")) indices.push("development");
-    if($("#show_stab").is(":checked")) indices.push("stability");
-    
+    rank_names.forEach(r =>{
+        if($("#population_rank").is(":checked")) indices.push(r);
+    })
+    // if($("#talent_rank").is(":checked")) indices.push("talent");
+    // if($("#development_rank").is(":checked")) indices.push("development");
+    // if($("#stability_rank").is(":checked")) indices.push("stability");
+    console.log(indices);
     map.updateMap("index", indices);
 });
 

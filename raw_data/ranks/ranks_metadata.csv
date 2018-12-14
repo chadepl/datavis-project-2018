@@ -1,0 +1,36 @@
+enabled,hiererchy,column_id,column_display_name,type,color_scheme
+TRUE,none,state,state,categorical,CubehelixDefault
+TRUE,none,talent_rank,talent rank,ordinal sequential,GnBu
+TRUE,talent_rank,total_2011_2015,total college completion (%),quantitative,GnBu
+FALSE,talent_rank,urban_2011_2015,urban college completion (%),quantitative,GnBu
+FALSE,talent_rank,rural_2011_2015,rural college completion (%),quantitative,GnBu
+TRUE,talent_rank,rank_completion_graduate,total college completion (rank),ordinal sequential,GnBu
+FALSE,talent_rank,number_top100,universities in top 100,ordinal sequential,GnBu
+FALSE,talent_rank,rank_top100,universities in top 100 (rank),ordinal sequential,GnBu
+TRUE,none,population_rank,population rank,ordinal sequential,OrRd
+TRUE,population_rank,population,population,quantitative,OrRd
+TRUE,population_rank,population_change,population change (%),quantitative,OrRd
+TRUE,population_rank,net_migration,net migration,quantitative,OrRd
+TRUE,population_rank,migration_percentage,migration (%),quantitative,OrRd
+TRUE,population_rank,median_household_income_2016,median household income 2016 (USD),quantitative,OrRd
+TRUE,none,development_rank,development rank,ordinal sequential,YlGn
+TRUE,development_rank,energy,energy,ordinal sequential,YlGn
+TRUE,development_rank,internet_access,internet access,ordinal sequential,YlGn
+TRUE,development_rank,transportation,transportation,ordinal sequential,YlGn
+TRUE,none,stability_rank,stability rank,ordinal sequential,YlOrBr
+TRUE,stability_rank,stability_taxes_rank,taxes stability rank,ordinal sequential,YlOrBr
+TRUE,stability_rank,corporate_taxes,corporate taxes rank,ordinal sequential,YlOrBr
+TRUE,stability_rank,individual_taxes,individual taxes rank,ordinal sequential,YlOrBr
+TRUE,stability_rank,sales_taxes, sales taxes rank,ordinal sequential,YlOrBr
+TRUE,stability_rank,property_taxes,property taxes rank,ordinal sequential,YlOrBr
+TRUE,stability_rank,"violent 
+ crime per 100000 citizens","violent 
+ crime per 100000 citizens",ordinal sequential,YlOrBr
+TRUE,stability_rank,"property 
+ crime per 100000 citizens","property 
+ crime per 100000 citizens",ordinal sequential,YlOrBr
+TRUE,stability_rank,violent_crimes_rank,violent crimes rank,ordinal sequential,YlOrBr
+TRUE,stability_rank,property_crimes_rank,property crimes rank,ordinal sequential,YlOrBr
+TRUE,stability_rank,unemployment,unemployment (%),ordinal sequential,YlOrBr
+TRUE,stability_rank,unemployment_rank,unemployment rank,ordinal sequential,YlOrBr
+FALSE,stability_rank,average,average of stability measures,ordinal sequential,YlOrBr
