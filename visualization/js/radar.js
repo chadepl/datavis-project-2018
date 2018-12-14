@@ -3,28 +3,17 @@ class Radar {
         
         this.element = opts.element;
         this.data = opts.data;
+        this.objectId = opts.objectId
         this.features = d3.entries(this.data[0])
-            .filter(d => d.key != opts.objectId)
+            .filter(d => d.key != this.objectId)
             .map(d => d.key);
 
-        this.scoresDomain = [0, 50]; // TODO: check domain
-        /*console.log(this.data.reduce((a,b) => {
-            let arr1 = d3.entries(a)
-                .filter(o => o.key != "state");
-            let arr2 = d3.entries(b)
-                .filter(o => o.key != "state");
-            return arr1.concat(arr2);
-        }));*/
-        console.log(opts);
-        console.log(this.features);
+        this.scoresDomain = d3.extent(this.data, d => +d[this.features[0]]); 
 
         // General variables
         this.pointsToDisplay = []; 
         this.width = d3.select(this.element).node().getBoundingClientRect().width; 
         this.height = d3.select(this.element).node().getBoundingClientRect().height; 
-        
-        console.log(d3.select(this.element).node().getBoundingClientRect());
-        console.log(this.width + ", " + this.height);
         
         this.svg = d3.select(this.element)
             .append("svg")
@@ -59,8 +48,9 @@ class Radar {
             .attr("class", "radar-area")
             .attr("transform", "translate("+(this.radarWidth/2)+","+(this.radarHeight/2)+")");
 
-        this.featuresScale = d3.scalePoint().domain(this.features).range([0, 2 * Math.PI - (this.features.length - 1) * (2 * Math.PI / this.features.length)]);
+        this.featuresScale = this.getFeatureAngle;//d3.scalePoint().domain(this.features).range([0, 2 * Math.PI - (this.features.length - 1) * (2 * Math.PI / this.features.length)]);
         this.scoresScale = d3.scaleLinear().domain(this.scoresDomain).range([this.radius, 0]); 
+        console.log(this.scoresScale);
         this.statesScale = d3.scaleOrdinal().domain(this.data.map(d => d.state)).range(d3.schemeCategory10); // TODO: fix
 
         this.arc = d3.arc();
@@ -69,6 +59,14 @@ class Radar {
         this.drawRadar();
         this.drawAnnotationLayer();
         this.drawTitle();
+    }
+
+    getFeatureAngle(feature){
+        let step = (2 * Math.PI) / this.features.length;
+        for(var i = 0; i < this.features.length; i++){
+            if(this.features[i] == feature)
+                return i * step;
+        }
     }
 
     drawPoint(point){
@@ -124,7 +122,39 @@ class Radar {
         // TODO: Draw axis layer
         console.log(this.pointsToDisplay);
 
-        var area = d3.lineRadial();            
+        var lineGenerator = d3.radialLine();
+
+        var lines = this.chart.selectAll(".radar-line").data(this.pointsToDisplay, d => d.state);
+
+        lines.exit().remove();
+
+        lines.enter()
+            .append("path")
+            .attr("class", "radar-line")
+            .attr("d", d => {
+                var data = [];
+                this.features.forEach(f => data.push([this.featuresScale(f), this.scoresScale(+d[f])]));
+                data.push([this.featuresScale(this.features[0]), this.scoresScale(+d[this.features[0]])]); // close the line
+                return lineGenerator(data); //[[angle1, radius1],[angle2, radius2],...]
+            })
+            .attr("fill", "none")
+            .attr("stroke", d => this.statesScale(d.state))
+            .attr("stroke-width", "3");
+
+        /*var testTexts = this.chart.selectAll(".radar-test-text").data(this.features);
+
+        testTexts.exit().remove();
+
+        testTexts.enter()
+            .append("text")
+            .attr("class", "radar-test-text")
+            .attr("x", d => this.getFeaturePosition(d, 40)[0])
+            .attr("y", d => this.getFeaturePosition(d, 40)[1])
+            .text(d => d);*/
+            
+
+        /// Enable if areas are desired
+        /*var area = d3.lineRadial();            
         area.angle(d => this.featuresScale(d.key));
         area.radius(d => this.scoresScale(d.value));
 
@@ -140,7 +170,7 @@ class Radar {
                 var color = d3.color(this.statesScale(d.state)); 
                 color.opacity = 0.5;
                 return color;})
-            .attr("d", d => area(d3.entries(d).filter(d => this.features.includes(d.key))));
+            .attr("d", d => area(d3.entries(d).filter(d => this.features.includes(d.key))));*/
         
     }
 
@@ -182,6 +212,9 @@ class Radar {
             .attr("y1", 0)
             .attr("x2", d => this.getFeaturePosition(d, this.radius)[0])
             .attr("y2", d => this.getFeaturePosition(d, this.radius)[1]);
+
+        
+        console.log(this.features.map(f => [f, this.featuresScale(f)]));
 
         this.chart.selectAll(".radar-axis-labels").data(this.features).enter()
             .append("text")                
