@@ -39,7 +39,7 @@ Promise.all(promises).then(function(files) {
     console.log(ranks_meta);
     for(var i = 0 ; i < ranks_meta.length ; i++){
         var rank = ranks_meta[i];
-        if(rank.hiererchy == 'none'){
+        if(rank.hiererchy == 'none' && rank.column_id != "state"){
             $("#filters").append("<input class='rank_toggle' id='" + rank.column_id + "' type='checkbox' name='" + rank.column_display_name + "' value='" + rank.column_display_name + "'>" + rank.column_display_name + "<img src='https://image.flaticon.com/icons/svg/60/60995.svg' class='dd_icon'><br id='" + rank.column_id + "_break'>");
         }
     }
@@ -79,18 +79,14 @@ $(document.body).on('change', '.rank_toggle' ,function(){
     uncheckAllSubChekcs();
     var rank_names = [];
     ranks_meta.forEach(r =>{
-        if(r.hiererchy == "none"){
+        if(r.hiererchy == "none" && r.column_id != 'state'){
             rank_names.push(r.column_id);
         }
     });
     var indices = [];
     rank_names.forEach(r =>{
-        if($("#population_rank").is(":checked")) indices.push(r);
+        if($("#"+r).is(":checked")) indices.push(r);
     })
-    // if($("#talent_rank").is(":checked")) indices.push("talent");
-    // if($("#development_rank").is(":checked")) indices.push("development");
-    // if($("#stability_rank").is(":checked")) indices.push("stability");
-    console.log(indices);
     map.updateMap("index", indices);
 });
 
