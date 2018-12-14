@@ -119,7 +119,7 @@
 /* summarization stuff*/
 
 #summarization {
-  max-height: 10%;
+  max-height: 200px;
   margin-bottom: 10px;
   -webkit-overflow-scrolling: touch;
   display: flex;
