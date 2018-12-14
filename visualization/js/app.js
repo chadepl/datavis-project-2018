@@ -48,7 +48,7 @@ Promise.all(promises).then(function(files) {
     for(var i = 0 ; i < ranks_meta.length ; i++){
         var row = ranks_meta[i];
         if(row.hierarchy != "none" && row.column_id != 'state' && row.enabled == "TRUE"){
-            $("#" + row.hierarchy + "_container").append("<input class='sub_check' value='"+ row.column_id +"' type='radio' name='sub_check'>"+row.column_display_name+"</input>");
+            $("#" + row.hierarchy + "_container").append("<input class='sub_check' value='"+ row.column_id +"' type='radio' name='sub_check'>"+row.column_display_name+"</input><br>");
         }
     }
 

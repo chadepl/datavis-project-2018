@@ -5,10 +5,10 @@
   text-align: center;
 }
 
-.left{
+/*.left{
   margin-left: 2%;
   width: 34% !important; 
-}
+}*/
 
 #toggle{
   margin: 0 auto;
@@ -30,16 +30,17 @@
 
 .filter_container{
   display: none;
+  font-size: 0.8em;
 }
 
 .filter_container input{
-  margin-left: 20px;
-  margin-right: 5px;
+  margin-right: 10px;
 }
 
 
 .dd_icon{
-  width: 20px;
+  width: 10px;
+  margin-left: 10px;
 }
 
 .dd_icon:hover{
@@ -47,10 +48,6 @@
 }
 
 .filter_container{
-  padding: 20px;
-  border: 1px solid #ccc;
-  width: 70%;
-  margin: 10px auto;
 }
 
 #map-toggle{
@@ -58,6 +55,11 @@
   border-right: none;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
+}
+
+.rank_toggle{
+  margin-bottom: 20px;
+  margin-right: 10px;
 }
 
 #radar-toggle{
@@ -72,11 +74,8 @@
   margin-top: -35px
 }
 
-#map, #radar{
-	height: 600px;
-}
-
 #map, #radar, #filters{
+	height: 600px;
   border: 1px solid #ccc;
 }
 
@@ -89,7 +88,11 @@
 }
 
 #filters{
-  height: 290px;
+  overflow-y: scroll;
+  padding-left: 20px;
+  padding-top: 20px;
+  font-size: 0.8em;
+  text-align: left;
 }
 
 
