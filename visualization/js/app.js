@@ -32,6 +32,7 @@ Promise.all(promises).then(function(files) {
     ranks_meta = files[2];
     for(var i = 0 ; i < ranks_meta.length ; i++){
         var rank = ranks_meta[i];
+        console.log(rank);
         if(rank.hierarchy == 'none' && rank.column_id != "state"){
             $("#filters").append("<input class='rank_toggle' id='" +
                 rank.column_id + "' type='checkbox' name='" +

@@ -1,4 +1,4 @@
-enabled,hiererchy,column_id,column_display_name,type,color_scheme
+enabled,hierarchy,column_id,column_display_name,type,color_scheme
 TRUE,none,state,state,categorical,CubehelixDefault
 TRUE,none,talent_rank,talent rank,ordinal sequential,GnBu
 TRUE,talent_rank,total_2011_2015,total college completion (%),quantitative,GnBu
