@@ -1,7 +1,6 @@
 var layer_on = false;
 var sidePaneMode = "radar";
 
-var _url = 'http://localhost:8888/raw_data/';
 var map, radar;
 var promises = [
     d3.json("../../raw_data/geographic/us_states.json"),
@@ -24,9 +23,23 @@ Promise.all(promises).then(function(files) {
             ranks: files[5],
         } 
     }
+
+    let summarizationOpts = {
+        element: document.querySelector("#summarization"),
+        data: {
+            population: files[1],
+            stability: files[2],
+            talent: files[3],
+            development: files[4],
+            ranks: files[5],
+        } 
+    }
     
     map = new MapView(mapOpts);
     map.setStateClickCb(stateClickCb);
+
+    summarization = new Summarization(summarizationOpts);
+
 
     var popKeys = Object.keys(files[1][0]);
     var stabKeys = Object.keys(files[2][0]);
