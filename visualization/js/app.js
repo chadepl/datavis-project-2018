@@ -5,9 +5,9 @@ var _url = 'http://localhost:8888/raw_data/';
 var map, radar;
 var promises = [
     d3.json("../../raw_data/geographic/us_states.json"),
-    d3.json("../../raw_data/joined_data.csv"),
+    d3.csv("../../raw_data/joined_data.csv"),
     d3.csv("../../raw_data/ranks/ranks_metadata.csv"),
-    d3.csv("../../raw_data/ranks/ranks.csv"),
+    d3.csv("../../raw_data/ranks/ranks.csv")
     //d3.csv("../../raw_data/population/population.csv"),
     //d3.csv("../../raw_data/stability/Stability.csv"),
     //d3.csv("../../raw_data/talent/talent.csv"),
@@ -15,6 +15,7 @@ var promises = [
 ];
 
 Promise.all(promises).then(function(files) {
+    console.log(files);
     let mapOpts = {
         element: document.querySelector("#map"),
         data: {
