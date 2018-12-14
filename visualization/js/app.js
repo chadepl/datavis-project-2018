@@ -5,12 +5,13 @@ var _url = 'http://localhost:8888/raw_data/';
 var map, radar;
 var promises = [
     d3.json("../../raw_data/geographic/us_states.json"),
-    d3.csv("../../raw_data/population/population.csv"),
-    d3.csv("../../raw_data/stability/Stability.csv"),
-    d3.csv("../../raw_data/talent/talent.csv"),
-    d3.csv("../../raw_data/development/development.csv"),
+    d3.json("../../raw_data/joined_data.csv"),
+    d3.csv("../../raw_data/ranks/ranks_metadata.csv"),
     d3.csv("../../raw_data/ranks/ranks.csv"),
-    d3.csv("../../raw_data/ranks/ranks_metadata.csv")
+    //d3.csv("../../raw_data/population/population.csv"),
+    //d3.csv("../../raw_data/stability/Stability.csv"),
+    //d3.csv("../../raw_data/talent/talent.csv"),
+    //d3.csv("../../raw_data/development/development.csv")
 ];
 
 Promise.all(promises).then(function(files) {
@@ -18,21 +19,19 @@ Promise.all(promises).then(function(files) {
         element: document.querySelector("#map"),
         data: {
             geometry: files[0],
-            population: files[1],
-            stability: files[2],
-            talent: files[3],
-            development: files[4],
-            ranks: files[5],
+            data: files[1],
+            metadata: files[2],
+            ranks: files[3],
         } 
     }
     
     map = new MapView(mapOpts);
     map.setStateClickCb(stateClickCb);
 
-    ranks_meta = files[6];
+    ranks_meta = files[2];
     for(var i = 0 ; i < ranks_meta.length ; i++){
         var rank = ranks_meta[i];
-        if(rank.hiererchy == 'none' && rank.column_id != "state"){
+        if(rank.hierarchy == 'none' && rank.column_id != "state"){
             $("#filters").append("<input class='rank_toggle' id='" +
                 rank.column_id + "' type='checkbox' name='" +
                 rank.column_id + "' value='" + 
@@ -46,14 +45,15 @@ Promise.all(promises).then(function(files) {
 
     for(var i = 0 ; i < ranks_meta.length ; i++){
         var row = ranks_meta[i];
-        if(row.hiererchy != "none" && row.column_id != 'state'){
-            $("#" + row.hiererchy + "_container").append("<input class='sub_check' value='"+ row.column_id +"' type='radio' name='sub_check'>"+row.column_display_name+"</input>");
+        if(row.hierarchy != "none" && row.column_id != 'state'){
+            $("#" + row.hierarchy + "_container").append("<input class='sub_check' value='"+ row.column_id +"' type='radio' name='sub_check'>"+row.column_display_name+"</input>");
         }
     }
 
     let radarOpts = {
         element: document.querySelector("#radar"),
-        data: files[5],
+        data: files[1],
+        metadata: files[2],
         objectId: "state"
     };
 
@@ -65,7 +65,7 @@ $(document.body).on('change', '.rank_toggle' ,function(){
     uncheckAllSubChekcs();
     var rank_names = [];
     ranks_meta.forEach(r =>{
-        if(r.hiererchy == "none" && r.column_id != 'state'){
+        if(r.hierarchy == "none" && r.column_id != 'state'){
             rank_names.push(r.column_id);
         }
     });
