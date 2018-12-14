@@ -24,21 +24,10 @@ Promise.all(promises).then(function(files) {
         } 
     }
 
-    let summarizationOpts = {
-        element: document.querySelector("#summarization"),
-        data: {
-            population: files[1],
-            stability: files[2],
-            talent: files[3],
-            development: files[4],
-            ranks: files[5],
-        } 
-    }
     
     map = new MapView(mapOpts);
     map.setStateClickCb(stateClickCb);
 
-    summarization = new Summarization(summarizationOpts);
 
 
     var popKeys = Object.keys(files[1][0]);
@@ -74,6 +63,15 @@ Promise.all(promises).then(function(files) {
     };
 
     radar = new Radar(radarOpts);
+
+    let summarizationOpts = {
+        element: document.querySelector("#summarization"),
+        data: files[1]
+    }
+
+    summarization = new Summarization(summarizationOpts);
+
+    
 
 })
 

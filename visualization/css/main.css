@@ -107,3 +107,14 @@
   stroke-linecap: round;
   pointer-events: none;
 }
+
+/* summarization stuff*/
+
+#summarization {
+  max-height: 10%;
+  margin-bottom: 10px;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}

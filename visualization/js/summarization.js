@@ -3,9 +3,11 @@ const ranks = ["overall"];
 class Summarization{
 
     constructor(opts){
-       console.log(opts.data.ranks);
-       var result = _.unionBy(update, original, "label");
- 
+        this.data = opts.data;
+        this.element = opts.element;
+
+        //initial painting
+        
     }
 
     update(){
