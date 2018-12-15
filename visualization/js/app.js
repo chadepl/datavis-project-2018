@@ -6,7 +6,7 @@ var map, radar;
 var promises = [
     d3.json("../../raw_data/geographic/us_states.json"),
     d3.csv("../../raw_data/joined_data.csv"),
-    d3.csv("../../raw_data/ranks/ranks_metadata.csv"),
+    d3.csv("../../raw_data/ranks_metadata.csv"),
     d3.csv("../../raw_data/ranks/ranks.csv")
     //d3.csv("../../raw_data/population/population.csv"),
     //d3.csv("../../raw_data/stability/Stability.csv"),
@@ -52,14 +52,14 @@ Promise.all(promises).then(function(files) {
         }
     }
 
-    let radarOpts = {
-        element: document.querySelector("#radar"),
+    let scatterExplorerOpts = {
+        element: document.querySelector("#scatter-explorer"),
         data: files[1],
         metadata: files[2],
         objectId: "state"
     };
 
-    radar = new Radar(radarOpts);
+    scatterExplorer = new ScatterExplorerView(scatterExplorerOpts);
 
     let summarizationOpts = {
         element: document.querySelector("#summarization"),
