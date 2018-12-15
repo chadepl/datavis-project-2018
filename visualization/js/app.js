@@ -24,7 +24,7 @@ Promise.all(promises).then(function(files) {
     })
     statesStatus = ans;
 
-    currentFeatures = ["population_rank"];
+    currentFeatures = ["stability_rank"];
     currentStates = getCurrentStates(statesStatus);
 
     let mapOpts = {
