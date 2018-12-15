@@ -43,6 +43,10 @@
   margin-left: 10px;
 }
 
+.slider-container{
+  margin-bottom: 20px;
+}
+
 .dd_icon:hover{
   cursor: pointer;
 }
