@@ -19,42 +19,34 @@ class MapView {
         this.width = d3.select(this.element).node().getBoundingClientRect().width;
         this.height = d3.select(this.element).node().getBoundingClientRect().height;
         
+        this.svg = d3.select(this.element)
+             .append("svg")
+             .attr("width", this.width)
+             .attr("height", this.height);
+
         this.projection = d3.geoAlbersUsa()
             .scale(1000) // TODO: make this dynamic
             .translate([this.width/2, this.height/2]);
         this.path = d3.geoPath().projection(this.projection);
-
-        this.svg = d3.select(this.element)
-             .append("svg")
-             .attr("width", this.width)
-             .attr("height", this.height); 
+        
+        this.states_shapes = this.svg.append("g").selectAll("path").data(this.states).enter()
+            .append("path")
+            .attr("stroke", "black")
+            .attr("class", "state")
+            .attr("fill", "white")
+            .attr("stroke-linejoin", "round")
+            .attr("d", this.path)
+            .on("click", d => {
+                this.stateClickCb(d);
+            });         
         
         // Color scales 
         this.indexColorScale = d3.scaleSequential();
 
-        this.drawMap();
-    }
-
-    drawMap(){
-        this.states_poly = this.svg.append("g").selectAll("path")
-            .data(this.states)
-            .enter()
-            .append("path")
-                .attr("stroke", "black")
-                .attr("class", "state")
-                .attr("fill", "white")
-                .attr("stroke-linejoin", "round")
-                .attr("d", this.path)
-                .on("click", d => {
-                    this.stateClickCb(d);
-                });
-
-        // add colors with current features and selections with current states
         this.redrawMap();
     }
 
     updateMapData(states, features){
-        console.log("update");
         this.currentStates = states;
         this.currentFeatures = features;
 
@@ -66,7 +58,8 @@ class MapView {
 
         // 1. first all the logic that its needed to print the correct color scale and shapes, etc
         var feature_info = this.metadata.filter(d => d.column_id == this.currentFeatures[0])[0];
-        this.indexColorScale = d3.scaleSequential(d3["interpolate" + feature_info.color_scheme]).domain([50, 1])//.range(d3["interpolate" + feature_info.color_scheme]);
+        this.indexColorScale = d3.scaleSequential(d3["interpolate" + feature_info.color_scheme]).domain([50, 1])
+        this.drawLegend(this.indexColorScale);
 
         /*var data = this.ranks.map(d => {
             var obj = {"state": d.state};
@@ -91,29 +84,21 @@ class MapView {
 
         // 2. then just update the svg
         // Fill can change if features change and stroke if state changes
-        console.log(this.currentStates);
-        this.states_poly
+        this.states_shapes
             .attr("fill", d => {
                 var stateInfo = this.findStateInfo(d.properties.NAME.toUpperCase(), this.data, this.currentFeatures[0]);
                 if(stateInfo){
-                    return this.indexColorScale(stateInfo);
+                    // add texture to selected elements
+                    var texture = textures.circles().complement().background(this.indexColorScale(stateInfo));
+                    this.svg.call(texture);
+                    if(this.currentStates.includes(d.properties.NAME.toUpperCase())){
+                        return texture.url();
+                    }else{
+                        return this.indexColorScale(stateInfo);
+                    }
                 }else{
                     return "white";
                 }       
-            })            
-            //.attr("stroke", d => {
-            //    if(this.currentStates.includes(d.properties.NAME.toUpperCase())){
-            //        return "yellow";
-            //   }else{
-            //        return "black";
-            //    }
-            //})
-            .attr("stroke-width", d => {
-                if(this.currentStates.includes(d.properties.NAME.toUpperCase())){
-                    return "3";
-                }else{
-                    return "1";
-                }
             });
     }
 
@@ -143,13 +128,11 @@ class MapView {
     }
 
     // Given a feature (column) displays its color map
-    drawLegend(feature){
+    drawLegend(targetScale){
 
         const x = d3.scaleLinear()
-            .domain(this.indexColorScale.domain())
+            .domain(targetScale.domain())
             .rangeRound([0, 260]);
-
-        console.log(this.indexColorScale.domain());
         
         const legend = this.svg.append("g")
             .style("font-size", "0.8rem")
@@ -327,6 +310,7 @@ class MapView {
     // setters
 
     setStateClickCb(cb){
+        console.log("entered");
         this.stateClickCb = cb;
     }
 

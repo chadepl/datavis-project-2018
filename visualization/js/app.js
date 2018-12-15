@@ -24,7 +24,7 @@ Promise.all(promises).then(function(files) {
     })
     statesStatus = ans;
 
-    currentFeatures = ["population_rank"];
+    currentFeatures = ["stability_rank"];
     currentStates = getCurrentStates(statesStatus);
 
     let mapOpts = {
@@ -84,7 +84,7 @@ var stateClickCb = function(state){
     currentStates = getCurrentStates(statesStatus);
     
     map.updateMapData(currentStates, currentFeatures);
-    scatterExplorer.updateDataStates("subset", currentStates);
+    scatterExplorer.updateScatterData(currentStates, currentFeatures);
 }  
 
 var featureClickCb = function(feature){
