@@ -15,7 +15,6 @@ var promises = [
 ];
 
 Promise.all(promises).then(function(files) {
-    console.log(files);
 
     var ans = {};
     files[3].map(function(x){
@@ -147,17 +146,28 @@ function initializeFilters(ranks_meta,data)
                 width: "80%",
                 theme: 'theme-blue',
                 showLabels: true,
-                isRange : true
+                isRange : true,
+                onstatechange: onSliderChange
             });
-            
         }
     }
+}
+
+var onSliderChange = function(range){
+    var lowerBound = range[0];
+    var upperBound = range[1];
 }
 
 function min_max(data,column){
     var min = data [0][column];
     var max = data [0][column];
     for(var i = 0 ; i < data.length ; i++){
+        if(data[i][column] == null){
+            console.log("null value thing");
+            console.log(column);
+            console.log(data[i]);
+            console.log(data[i][column]);
+        }
        var number =  data[i][column];
        if(number == ""){
            number = 0;
