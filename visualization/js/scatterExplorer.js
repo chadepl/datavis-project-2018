@@ -217,7 +217,7 @@ class ScatterExplorerView{
         var features = this.metadata
             .filter(d => d.hierarchy == feature && d.enabled)
             .map(d => d.column_id);
-        var stateInfo = this.chartData
+        var stateInfo = this.data
             .filter(d => d.state == state)[0];
         var tooltipData = [];
         features.forEach(f => {
