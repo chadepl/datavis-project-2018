@@ -1,6 +1,8 @@
 class ScatterExplorerView{
 
     constructor(opts){
+
+        this.featureClickCb = null;
         this.element = opts.element;
         this.data = opts.data;
         this.metadata = opts.metadata;
@@ -8,8 +10,8 @@ class ScatterExplorerView{
 
         this.currentData = this.data;
 
-        this.states = [];
-        this.currentFeatures = [];
+        this.currentStates = opts.currentStates;
+        this.currentFeatures = opts.currentFeatures;
         this.chartData = [];
 
         //this.hierarchy = 
@@ -44,9 +46,8 @@ class ScatterExplorerView{
         this.scatterPoints = this.scatter.append("g").attr("class", "scatter-points");
 
 
-
         this.featuresScale = d3.scalePoint().domain(this.currentFeatures).range([this.height - this.margin.bottom - this.margin.top, 0]);
-        this.statesScale = d3.scalePoint().domain(this.states).range([0, this.width - this.margin.left - this.margin.right]);
+        this.statesScale = d3.scalePoint().domain(this.currentStates).range([0, this.width - this.margin.left - this.margin.right]);
         this.featuresSizeScales = {};
         this.currentFeatures.forEach(f => {
             var scale = d3.scaleLinear();
@@ -75,7 +76,7 @@ class ScatterExplorerView{
         }
 
         // then update all dependencies
-        this.states = this.currentData.map(d => d.state);
+        this.currentStates = this.currentData.map(d => d.state);
 
         this.currentFeatures = [];
         this.metadata.forEach(d => {
@@ -96,7 +97,7 @@ class ScatterExplorerView{
         }); 
 
         this.featuresScale.domain(this.currentFeatures);
-        this.statesScale.domain(this.states);
+        this.statesScale.domain(this.currentStates);
         console.log(this.statesScale);
         this.featuresSizeScales = {};
         this.currentFeatures.forEach(f => {
@@ -115,10 +116,14 @@ class ScatterExplorerView{
         this.draw();
     }
 
+    updateDataFeatures(type, features){
+
+    }
+
     draw(){
 
         var lines = this.statesGridLines.selectAll("line")
-            .data(this.states)
+            .data(this.currentStates)
 
         lines.exit().remove();
         
@@ -160,8 +165,12 @@ class ScatterExplorerView{
             .call(d3.axisLeft(this.featuresScale));
     }
 
+    setFeatureClickCb(cb){
+        this.featureClickCb = cb;
+    }
+
     generateRandomStateArray(){
-        const numRand = Math.round(Math.random() * 50);
+        const numRand = Math.round(Math.random() * 10);
         var randomIndex = [];
         for(var i = 0; i < numRand; i++){
             var tempRand = Math.round(Math.random()*50);

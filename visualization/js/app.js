@@ -1,6 +1,6 @@
 var layer_on = false;
 var sidePaneMode = "radar";
-var ranks_meta;
+var ranks_meta, statesStatus, currentStates, currentFeatures;
 var _url = 'http://localhost:8888/raw_data/';
 var map, radar;
 var promises = [
@@ -16,23 +16,27 @@ var promises = [
 
 Promise.all(promises).then(function(files) {
     console.log(files);
-    let mapOpts = {
-        element: document.querySelector("#map"),
-        data: {
-            geometry: files[0],
-            data: files[1],
-            metadata: files[2],
-            ranks: files[3],
-        } 
-    }
 
     var ans = {};
     files[3].map(function(x){
-        ans[x.state] = false;
+        ans[x.state] = Math.round(Math.random() - 0.3);
         return ans;
     })
-    this.states = ans;
-    
+    statesStatus = ans;
+
+    currentFeatures = ["population_rank"];
+    currentStates = getCurrentStates(statesStatus);
+
+    let mapOpts = {
+        element: document.querySelector("#map"),
+        geometry: files[0],
+        data: files[1],
+        metadata: files[2],
+        ranks: files[3],
+        currentStates: currentStates,
+        currentFeatures: currentFeatures
+    }
+
     map = new MapView(mapOpts);
     map.setStateClickCb(stateClickCb);
 
@@ -62,13 +66,48 @@ Promise.all(promises).then(function(files) {
         element: document.querySelector("#scatter-explorer"),
         data: files[1],
         metadata: files[2],
-        objectId: "state"
+        objectId: "state",
+        currentStates: currentStates,
+        currentFeatures: currentFeatures
     };
 
-    scatterExplorer = new ScatterExplorerView(scatterExplorerOpts);
+    scatterExplorer = new ScatterExplorerView(scatterExplorerOpts); 
+    scatterExplorer.setFeatureClickCb(featureClickCb);
 
 
 })
+
+var getCurrentStates = function(statesStatus){
+    var temp = [];
+    d3.entries(statesStatus).forEach(e => {
+        if(e.value == 1){
+            temp.push(e.key);
+        }
+    })
+    return temp;
+}
+
+// callbacks
+var stateClickCb = function(state){
+    statesStatus[state.properties.NAME.toUpperCase()] ^= true;
+    console.log(statesStatus);
+    console.log(state);
+    currentStates = getCurrentStates(statesStatus);
+    
+    map.updateMapData(currentStates, currentFeatures);
+    scatterExplorer.updateDataStates("subset", currentStates);
+}  
+
+var featureClickCb = function(feature){
+    console.log(feature);
+    if(currentFeatures.includes(feature)){
+
+    }else{
+        currentFeatures.push(feature)
+    }
+}  
+
+// HTML events handling
 
 $(document.body).on('change', '.rank_toggle' ,function(){
     uncheckAllSubChekcs();
@@ -106,19 +145,7 @@ var uncheckAllRanksChecks = function(){
     $(".rank_toggle").prop("checked", false);
 }
 
-// callbacks
-var stateClickCb = function(state){
-    this.states[state.properties.NAME.toUpperCase()] ^= true;
-    
-    console.log("cb");
-    if(sidePaneMode == "radar"){
-        console.log(state);
-        radar.drawPoint(state);
-    }else if(detailMode){
-        console.log("cb");
-    }
-    // can call the radar stuff here
-}
+
 
 
 
