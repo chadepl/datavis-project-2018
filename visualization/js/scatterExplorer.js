@@ -46,59 +46,38 @@ class ScatterExplorerView{
         this.scatterPoints = this.scatter.append("g").attr("class", "scatter-points");
 
 
-        this.featuresScale = d3.scalePoint().domain(this.currentFeatures).range([this.height - this.margin.bottom - this.margin.top, 0]);
-        this.statesScale = d3.scalePoint().domain(this.currentStates).range([0, this.width - this.margin.left - this.margin.right]);
+        this.featuresScale = d3.scalePoint().range([this.height - this.margin.bottom - this.margin.top, 0]);
+        this.statesScale = d3.scalePoint().range([0, this.width - this.margin.left - this.margin.right]);
         this.featuresSizeScales = {};
-        this.currentFeatures.forEach(f => {
-            var scale = d3.scaleLinear();
-            var domain = d3.extent(this.chartData, d => {
-                if(d.feature == f){
-                    return +d.value;
-                }
-            });
-            scale.domain(domain).range([5, 20]);
-            this.featuresSizeScales[f] = scale;
-        });
 
-        console.log(this.featuresSizeScales);
-
-        //this.updateDataStates("all", []);
-        this.updateDataStates("subset", ["MAINE", "MONTANA", "VERMONT", "NORTH CAROLINA"]);
-        this.draw();
+        this.updateScatterData(this.currentStates, this.currentFeatures);
     }
 
-    updateDataStates(type, states){
-        // first update general data
-        if(type == "all"){
-            this.currentData = this.data;
-        }else if(type == "subset"){
-            this.currentData = this.data.filter(d => states.includes(d.state));
-        }
+    updateScatterData(states, features){
 
-        // then update all dependencies
-        this.currentStates = this.currentData.map(d => d.state);
-
-        this.currentFeatures = [];
-        this.metadata.forEach(d => {
-            if(d.hierarchy == "none" && d.column_id != "state")
-                this.currentFeatures.push(d.column_id);
-        });
+        console.log("update");
+        this.currentStates = states;
+        this.currentFeatures = features;
 
         this.chartData = [];
-        this.currentData.forEach(d => {
-            d3.entries(d).forEach(f => {
-                var temp = {state: d.state};
-                if(this.currentFeatures.includes(f.key)){
-                    temp["feature"] = f.key;
-                    temp["value"] = +f.value;
-                    this.chartData.push(temp);
-                }
-            })
-        }); 
-
+        this.data.forEach(d => {
+            if(this.currentStates.includes(d.state)){
+                d3.entries(d).forEach(f => {
+                    var temp = {state: d.state};
+                    if(this.currentFeatures.includes(f.key)){
+                        temp["feature"] = f.key;
+                        temp["value"] = +f.value;
+                        this.chartData.push(temp);
+                    }
+                })
+            }
+            
+        });
+        
+        // Update scales
         this.featuresScale.domain(this.currentFeatures);
         this.statesScale.domain(this.currentStates);
-        console.log(this.statesScale);
+
         this.featuresSizeScales = {};
         this.currentFeatures.forEach(f => {
             var scale = d3.scaleLinear();
@@ -110,17 +89,13 @@ class ScatterExplorerView{
             scale.domain(domain).range([5, 20]);
             this.featuresSizeScales[f] = scale;
         });
-        console.log(this.currentData);
-
-
-        this.draw();
-    }
-
-    updateDataFeatures(type, features){
+        console.log(this.featuresSizeScales);
+    
+        this.drawScatter();
 
     }
 
-    draw(){
+    drawScatter(){
 
         var lines = this.statesGridLines.selectAll("line")
             .data(this.currentStates)
