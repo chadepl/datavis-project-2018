@@ -151,32 +151,7 @@ class ScatterExplorerView{
                 console.log(d);
             });;
 
-        /*var points = this.scatterPoints.selectAll("circle").data(this.chartData, d => d.state + ", " + d.feature);
-
-        points.transition(t).attr("cx", d => this.statesScale(d.state));
-
-        points.exit().remove();
-
-        points
-            .enter()
-            .append("circle")
-            .attr("cx", d => this.statesScale(d.state))
-            .merge(points)
-            .attr("cy", d => this.featuresScale(d.feature))
-            .attr("r", d => this.featuresSizeScales[d.feature](d.value))
-            .on("mouseover", function(d){
-                d3.select(this).attr("fill", "red");
-            })
-            .on("mouseout", function(d){
-                d3.select(this).attr("fill", "black");
-            }).on("click", function(d){
-                console.log(d);
-            });*/
-
         d3.select(".axis-features").remove();
-        //this.svg.append("g").attr("class", "axis-features")
-        //    .attr("transform", "translate("+(this.margin.left - 30)+","+ this.margin.top +")")
-        //    .call(d3.axisLeft(this.featuresScale));
         
         var axisFeatures = this.svg.append("g").attr("class", "axis-features")
             .attr("transform", "translate(0,"+ this.margin.top +")")
@@ -184,7 +159,9 @@ class ScatterExplorerView{
             .data(this.allFeaturesOnDisplay).enter()
             .append("g").attr("class", "feature-label")
             .attr("transform", d => "translate(0,"+this.featuresScale(d)+")")
-            .on("click", d => console.log("clicked!"));
+            .on("click", d => {
+                this.sortByFeature(d);
+            });
             
         axisFeatures.append("text")
             .attr("x", 0)
@@ -205,6 +182,11 @@ class ScatterExplorerView{
             .call(d3.axisBottom(this.statesScale));
 
         
+    }
+
+    sortByFeature(feature){
+        console.log(feature);
+        //this.scatterPoints.selectAll("g").
     }
 
     setFeatureClickCb(cb){
