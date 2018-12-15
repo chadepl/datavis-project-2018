@@ -40,20 +40,9 @@ Promise.all(promises).then(function(files) {
     map = new MapView(mapOpts);
     map.setStateClickCb(stateClickCb);
 
-    ranks_meta = files[2];
-    for(var i = 0 ; i < ranks_meta.length ; i++){
-        var rank = ranks_meta[i];
-        if(rank.hierarchy == 'none' && rank.column_id != "state"){
-            $("#filters").append("<input class='rank_toggle' id='" +
-                rank.column_id + "' type='checkbox' name='" +
-                rank.column_id + "' value='" + 
-                rank.column_id + "'>" + rank.column_display_name + 
-                "<img src='https://image.flaticon.com/icons/svg/60/60995.svg' class='dd_icon'><br id='" + 
-                rank.column_id + "_break'><div id='" + rank.column_id + 
-                "_container' class='filter_container'></div>");
-        }
-    }
 
+ 
+    initializeFilters(files[2], files[1])
 
     for(var i = 0 ; i < ranks_meta.length ; i++){
         var row = ranks_meta[i];
@@ -146,6 +135,50 @@ var uncheckAllRanksChecks = function(){
 }
 
 
+
+//filter setup
+
+function initializeFilters(ranks_meta,data)
+{
+    for(var i = 0 ; i < ranks_meta.length ; i++){
+        var rank = ranks_meta[i];
+        if(rank.filter == "TRUE"){
+
+            var minmax = min_max(data,rank.column_id);
+            var steps = Math.floor((minmax[1] - minmax[0])/20);
+            $("#filters").append("<input type='hidden' id='"+rank.column_id+"' class='slider-input' /><br><br>")
+            $("#"+rank.column_id+"").jRange({
+                from: minmax[0],
+                to: minmax[1],
+                format: '%s',
+                width: "80%",
+                theme: 'theme-blue',
+                showLabels: true,
+                isRange : true
+            });
+            
+        }
+    }
+}
+
+function min_max(data,column){
+    var min = data [0][column];
+    var max = data [0][column];
+    for(var i = 0 ; i < data.length ; i++){
+       var number =  data[i][column];
+       if(number == ""){
+           number = 0;
+       }
+       if(number < min){
+           min = number;
+       }
+       if(number > max){
+           max = number;
+       }
+    }
+    var answer = [min,max];
+    return answer;
+}
 
 
 
