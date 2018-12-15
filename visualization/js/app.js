@@ -162,12 +162,6 @@ function min_max(data,column){
     var min = data [0][column];
     var max = data [0][column];
     for(var i = 0 ; i < data.length ; i++){
-        if(data[i][column] == null){
-            console.log("null value thing");
-            console.log(column);
-            console.log(data[i]);
-            console.log(data[i][column]);
-        }
        var number =  data[i][column];
        if(number == ""){
            number = 0;
@@ -180,6 +174,10 @@ function min_max(data,column){
        }
     }
     var answer = [min,max];
+    console.log(answer);
+    // for(var i = 0 ; i < answer.length ; i ++)
+    //     if(typeof answer[i] == "string")
+    //         console.log(column)
     return answer;
 }
 
