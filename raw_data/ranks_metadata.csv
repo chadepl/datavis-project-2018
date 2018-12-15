@@ -4,7 +4,7 @@ TRUE,none,talent_rank,talent rank,ordinal sequential,GnBu
 TRUE,talent_rank,total_2011_2015,total college completion (%),quantitative,GnBu
 FALSE,talent_rank,urban_2011_2015,urban college completion (%),quantitative,GnBu
 FALSE,talent_rank,rural_2011_2015,rural college completion (%),quantitative,GnBu
-TRUE,talent_rank,rank_completion_graduate,total college completion (rank),ordinal sequential,GnBu
+FALSE,talent_rank,rank_completion_graduate,total college completion (rank),ordinal sequential,GnBu
 FALSE,talent_rank,number_top100,universities in top 100,ordinal sequential,GnBu
 FALSE,talent_rank,rank_top100,universities in top 100 (rank),ordinal sequential,GnBu
 TRUE,none,population_rank,population rank,ordinal sequential,OrRd
@@ -25,12 +25,12 @@ TRUE,stability_rank,sales_taxes, sales taxes rank,ordinal sequential,YlOrBr
 TRUE,stability_rank,property_taxes,property taxes rank,ordinal sequential,YlOrBr
 TRUE,stability_rank,"violent 
  crime per 100000 citizens","violent 
- crime per 100000 citizens",ordinal sequential,YlOrBr
+ crime per 100000 citizens",quantitative,YlOrBr
 TRUE,stability_rank,"property 
  crime per 100000 citizens","property 
- crime per 100000 citizens",ordinal sequential,YlOrBr
-TRUE,stability_rank,violent_crimes_rank,violent crimes rank,ordinal sequential,YlOrBr
-TRUE,stability_rank,property_crimes_rank,property crimes rank,ordinal sequential,YlOrBr
+ crime per 100000 citizens",quantitative,YlOrBr
+FALSE,stability_rank,violent_crimes_rank,violent crimes rank,ordinal sequential,YlOrBr
+FALSE,stability_rank,property_crimes_rank,property crimes rank,ordinal sequential,YlOrBr
 TRUE,stability_rank,unemployment,unemployment (%),ordinal sequential,YlOrBr
-TRUE,stability_rank,unemployment_rank,unemployment rank,ordinal sequential,YlOrBr
+FALSE,stability_rank,unemployment_rank,unemployment rank,ordinal sequential,YlOrBr
 FALSE,stability_rank,average,average of stability measures,ordinal sequential,YlOrBr

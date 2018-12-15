@@ -47,9 +47,6 @@
   cursor: pointer;
 }
 
-.filter_container{
-}
-
 #map-toggle{
   margin-right: 0;
   border-right: none;
@@ -58,7 +55,8 @@
 }
 
 .rank_toggle{
-  margin-bottom: 20px;
+  margin-top: 20px;
+  margin-bottom: 5px;
   margin-right: 10px;
 }
 
@@ -91,7 +89,6 @@
   overflow-y: scroll;
   padding-left: 20px;
   padding-top: 20px;
-  font-size: 0.8em;
   text-align: left;
 }
 
