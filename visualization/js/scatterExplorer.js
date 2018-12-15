@@ -53,7 +53,7 @@ class ScatterExplorerView{
         this.updateScatterData(this.currentStates, this.currentFeatures);
     }
 
-    updateScatterData(states, features){
+    updateScatterData(filteredData, states, features){
 
         console.log("update");
         this.currentStates = states;
@@ -61,8 +61,8 @@ class ScatterExplorerView{
 
         // {state: ALABAMA, talent_rank: 20, population_rank: 10}
 
-        this.chartData = this.data;
-        this.chartData = this.data.filter(d => this.currentStates.includes(d.state));
+        this.chartData = filteredData;
+        this.chartData = filteredData.filter(d => this.currentStates.includes(d.state));
         this.chartData = this.chartData.map(d => {
             var obj = {state: d.state};
             this.allFeaturesOnDisplay.forEach(f => obj[f] = d[f]);
@@ -289,7 +289,7 @@ class ScatterExplorerView{
         var features = this.metadata
             .filter(d => d.hierarchy == feature && d.enabled)
             .map(d => d.column_id);
-        var stateInfo = this.data
+        var stateInfo = this.chartData
             .filter(d => d.state == state)[0];
         var tooltipData = [];
         features.forEach(f => {

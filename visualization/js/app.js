@@ -41,8 +41,6 @@ Promise.all(promises).then(function(files) {
     map = new MapView(mapOpts);
     map.setStateClickCb(stateClickCb);
 
-
- 
     initializeFilters(files[2], files[1])
 
     let scatterExplorerOpts = {
@@ -76,7 +74,7 @@ var stateClickCb = function(state){
     currentStates = getCurrentStates(statesStatus);
     
     map.updateMapData(currentStates, currentFeatures);
-    scatterExplorer.updateScatterData(currentStates, currentFeatures);
+    scatterExplorer.updateScatterData(filteredData, currentStates, currentFeatures);
 }  
 
 var featureClickCb = function(feature){
@@ -85,7 +83,7 @@ var featureClickCb = function(feature){
     }else{
     }
     map.updateMapData(currentStates, currentFeatures);
-    scatterExplorer.updateScatterData(currentStates, currentFeatures);
+    scatterExplorer.updateScatterData(filteredData, currentStates, currentFeatures);
 }  
 
 // HTML events handling
@@ -189,12 +187,14 @@ function min_max(data,column){
 // }
 
 var filterData = function(){
-    var data = fullData.slice();
+    filteredData = fullData.slice();
     for(var column_id in sliderValues){
-        data = $.grep(data, function(d){ 
+        filteredData = $.grep(filteredData, function(d){ 
             return +d[column_id] >= sliderValues[column_id][0] && +d[column_id] <= sliderValues[column_id][1]; 
         });
     }
+
+    scatterExplorer.updateScatterData(filteredData, currentStates, currentFeatures);
     
 }
 
