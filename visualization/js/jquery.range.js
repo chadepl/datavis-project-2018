@@ -137,7 +137,7 @@
 				.trigger('rangeslideend');
 			this.labels.removeClass('focused');
 			$(document).off('.slider');
-		  this.options.ondragend.call(this, this.options.value);
+		  this.options.ondragend.call(this, this.options);
 		},
 		barClicked: function(e) {
 			if(this.options.disable) return;
@@ -330,7 +330,7 @@
 			if (this.inputNode.val() !== this.options.value) {
 				this.inputNode.val(this.options.value)
 					.trigger('change');
-				this.options.onstatechange.call(this, this.options.value);
+				this.options.onstatechange.call(this, this.options);
 			}
 		},
 		getValue: function() {

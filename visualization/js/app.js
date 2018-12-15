@@ -1,6 +1,7 @@
 var layer_on = false;
 var sidePaneMode = "radar";
-var ranks_meta, statesStatus, currentStates, currentFeatures;
+var sliderValues = {};
+var ranks_meta, statesStatus, currentStates, currentFeatures, filteredData, fullData;
 var _url = 'http://localhost:8888/raw_data/';
 var map, radar;
 var promises = [
@@ -22,7 +23,6 @@ Promise.all(promises).then(function(files) {
         return ans;
     })
     statesStatus = ans;
-
     currentFeatures = ["talent_rank"];
     currentStates = getCurrentStates(statesStatus);
 
@@ -35,6 +35,8 @@ Promise.all(promises).then(function(files) {
         currentStates: currentStates,
         currentFeatures: currentFeatures
     }
+
+    fullData = files[1];
 
     map = new MapView(mapOpts);
     map.setStateClickCb(stateClickCb);
@@ -78,7 +80,6 @@ var stateClickCb = function(state){
 }  
 
 var featureClickCb = function(feature){
-    console.log(feature);
     currentFeatures[0] = feature;
     if(currentFeatures.includes(feature)){
     }else{
@@ -146,25 +147,27 @@ function initializeFilters(ranks_meta,data)
                 theme: 'theme-blue',
                 showLabels: true,
                 isRange : true,
-                onstatechange: onSliderChange
+                ondragend: onSliderChange,
+                sliderName: rank.column_id
             });
-            if($("#"+rank.column_id+"_slider").length == 0){
-                console.log(rank.column_id);
-            }
+            $("#"+rank.column_id+"_slider").jRange("setValue", minmax[0] + "," + minmax[1])
+            sliderValues[rank.column_id] = minmax;
         }
     }
 }
 
-var onSliderChange = function(range){
-    var lowerBound = range[0];
-    var upperBound = range[1];
+var onSliderChange = function(args){
+    var range = args.value.split(",");
+    var sliderName = args.sliderName;
+    sliderValues[sliderName] = range.slice();
+    filterData();
 }
 
 function min_max(data,column){
-    var min = data [0][column];
-    var max = data [0][column];
+    var min = +data [0][column];
+    var max = +data [0][column];
     for(var i = 0 ; i < data.length ; i++){
-       var number =  data[i][column];
+       var number =  +data[i][column];
        if(number == ""){
            number = 0;
        }
@@ -176,7 +179,25 @@ function min_max(data,column){
        }
     }
     var answer = [min,max];
+    console.log(answer);
     return answer;
+}
+
+// var filterData = function(column_id, range){
+//     var data = fullData.slice();
+//     var data = $.grep(fullData, function(d){ 
+//         return +d[column_id] >= range[0] && +d[column_id] <= range[1]; 
+//     });
+// }
+
+var filterData = function(){
+    var data = fullData.slice();
+    for(var column_id in sliderValues){
+        data = $.grep(data, function(d){ 
+            return +d[column_id] >= sliderValues[column_id][0] && +d[column_id] <= sliderValues[column_id][1]; 
+        });
+    }
+    console.log(data);
 }
 
 
