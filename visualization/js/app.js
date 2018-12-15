@@ -44,13 +44,6 @@ Promise.all(promises).then(function(files) {
  
     initializeFilters(files[2], files[1])
 
-    for(var i = 0 ; i < ranks_meta.length ; i++){
-        var row = ranks_meta[i];
-        if(row.hierarchy != "none" && row.column_id != 'state' && row.enabled == "TRUE"){
-            $("#" + row.hierarchy + "_container").append("<input class='sub_check' value='"+ row.column_id +"' type='radio' name='sub_check'>"+row.column_display_name+"</input><br>");
-        }
-    }
-
     let scatterExplorerOpts = {
         element: document.querySelector("#scatter-explorer"),
         data: files[1],
