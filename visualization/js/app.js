@@ -111,7 +111,6 @@ $(document.body).on('click', '.dd_icon' ,function(){
 
 $(document.body).on('change', '.sub_check' ,function(){
     uncheckAllRanksChecks();
-    console.log($(this).val());
     map.updateMap([$(this).val()]);
 
 });
@@ -179,7 +178,6 @@ function min_max(data,column){
        }
     }
     var answer = [min,max];
-    console.log(answer);
     return answer;
 }
 
@@ -197,7 +195,7 @@ var filterData = function(){
             return +d[column_id] >= sliderValues[column_id][0] && +d[column_id] <= sliderValues[column_id][1]; 
         });
     }
-    console.log(data);
+    
 }
 
 
