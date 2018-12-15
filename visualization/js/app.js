@@ -26,6 +26,12 @@ Promise.all(promises).then(function(files) {
         } 
     }
 
+    var ans = {};
+    files[3].map(function(x){
+        ans[x.state] = false;
+        return ans;
+    })
+    this.states = ans;
     
     map = new MapView(mapOpts);
     map.setStateClickCb(stateClickCb);
@@ -60,14 +66,6 @@ Promise.all(promises).then(function(files) {
     };
 
     radar = new Radar(radarOpts);
-
-    let summarizationOpts = {
-        element: document.querySelector("#summarization"),
-        data: files[1]
-    }
-
-    summarization = new Summarization(summarizationOpts);
-
     
 
 })
@@ -110,6 +108,8 @@ var uncheckAllRanksChecks = function(){
 
 // callbacks
 var stateClickCb = function(state){
+    this.states[state.properties.NAME.toUpperCase()] ^= true;
+
     console.log("cb");
     if(sidePaneMode == "radar"){
         console.log(state);

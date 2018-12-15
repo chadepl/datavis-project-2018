@@ -126,3 +126,12 @@
   flex-direction: column;
   overflow-y: scroll;
 }
+.example rect {
+  fill: steelblue;
+}
+
+.example text {
+  fill: white;
+  font: 10px sans-serif;
+  text-anchor: end;
+}
