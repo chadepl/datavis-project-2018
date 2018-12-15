@@ -18,7 +18,6 @@ class ScatterExplorerView{
             .filter(d => d.hierarchy == "none" && d.column_id != "state")
             .map(d => d.column_id);
 
-        //this.hierarchy = 
         console.log(this.chartData);
         console.log(this.currentStates);
         console.log(this.currentFeatures);
@@ -41,12 +40,12 @@ class ScatterExplorerView{
         this.statesGridLines = this.scatter.append("g").attr("class", "state-grid-lines");
         this.scatterPoints = this.scatter.append("g").attr("class", "scatter-points");
 
-        this.featuresScale = d3.scalePoint().range([this.height - this.margin.bottom - this.margin.top, 0]);
-        this.statesScale = d3.scalePoint().range([0, this.width - this.margin.left - this.margin.right]);
+        this.featuresScale = d3.scaleBand().range([this.height - this.margin.bottom - this.margin.top, 0]);
+        this.statesScale = d3.scaleBand().range([0, this.width - this.margin.left - this.margin.right]);
         this.featuresSizeScales = {};
         this.featuresColorScales = {};
 
-        // Tooltip
+        // tooltip
         this.div = d3.select(this.element).append("div")	
             .attr("class", "tooltip")				
             .style("opacity", 0);
@@ -70,21 +69,24 @@ class ScatterExplorerView{
             return obj;
         })
         console.log(this.chartData);
-        this.chartData.sort((a,b) => +a[this.currentFeatures[0]] - b[this.currentFeatures[0]]);
+        this.chartData.sort((a,b) => +b[this.currentFeatures[0]] - a[this.currentFeatures[0]]);
         console.log(this.chartData);
 
         var orderedStates = this.chartData.map(d => d.state);
         
         // Update scales
-        this.featuresScale.domain(this.allFeaturesOnDisplay);
-        this.statesScale.domain(orderedStates);
+        this.featuresScale.domain(this.allFeaturesOnDisplay)
+            .paddingOuter(10);
+        this.statesScale.domain(orderedStates)
+            .paddingOuter(5);
+        this.barsWidth = this.statesScale.bandwidth() * 0.5;
 
         this.featuresSizeScales = {};
         this.allFeaturesOnDisplay.forEach(f => {
             var scale = d3.scaleLinear();
             let allValuesFeature = this.chartData.map(d => +d[f]);
             var domain = d3.extent(allValuesFeature);
-            scale.domain(domain).range([5, 20]);
+            scale.domain(domain).range([(this.featuresScale.bandwidth()*2/3) - 2, 5]);
             this.featuresSizeScales[f] = scale;
         });
         console.log(this.featuresSizeScales);
@@ -134,7 +136,7 @@ class ScatterExplorerView{
             .data(this.chartData, d => d.state);
 
         // States that were unselected
-        verticalGroups.exit().remove();
+        /*verticalGroups.exit().remove();
   
         verticalGroups.selectAll("circle")
         .transition(t)
@@ -185,8 +187,69 @@ class ScatterExplorerView{
                 this.div.transition()		
                     .duration(200)		
                     .style("opacity", 0);	
+            });;*/
+
+        // Bars experiment
+
+        verticalGroups.exit().remove();
+
+        verticalGroups.selectAll("rect")
+        .transition(t)
+            .attr("x", d => this.statesScale(d.state) - (this.barsWidth/2))
+            .attr("fill", d => {
+                if(d.feature == this.currentFeatures[0]){
+                    return this.featuresColorScales[d.feature](d.value);
+                }else{
+                    return "gray";
+                }
+            })
+
+        verticalGroups.enter()
+            .append("g")
+            .selectAll("rect")
+            .data(d => {
+                var state = d.state;
+                return d3.entries(d).filter(f => f.key != "state").map(g => {
+                    return {state: state, feature: g.key, value: g.value};
+                })
+            })
+            .enter()
+            .append("rect")
+            .attr("y", d => this.featuresScale(d.feature))// - (this.featuresScale.bandwidth()/2))
+            .attr("height", d => this.featuresSizeScales[d.feature](d.value))
+            .attr("width",  this.barsWidth)
+            .attr("x", d => this.statesScale(d.state) - (this.barsWidth/2))
+            .attr("stroke", "black")
+            .attr("stroke-width", "2")
+            .attr("fill", d => {
+                if(d.feature == this.currentFeatures[0]){
+                    return this.featuresColorScales[d.feature](d.value);
+                }else{
+                    return "gray";
+                }
+            })
+            .on("click", function(d){
+                console.log(d);
+            })
+            .on("mouseover", d => {	
+                this.div.transition()		
+                    .duration(200)		
+                    .style("opacity", .9);		
+                this.div.html(this.generateTooltipHTML(d.state, d.feature))	
+                    .style("left", (d3.event.pageX) + "px")		
+                    .style("top", (d3.event.pageY - 28) + "px");	
+                })					
+            .on("mouseout", d => {		
+                this.div.transition()		
+                    .duration(200)		
+                    .style("opacity", 0);	
             });;
 
+
+        
+        
+        // Axis 
+        
         d3.select(".axis-features").remove();
         
         var axisFeatures = this.svg.append("g").attr("class", "axis-features")
@@ -217,7 +280,6 @@ class ScatterExplorerView{
             .attr("transform", "translate("+this.margin.left+","+(this.height - this.margin.bottom + 30)+")")
             .call(d3.axisBottom(this.statesScale));
 
-        
     }
 
     generateTooltipHTML(state, feature){
@@ -266,70 +328,5 @@ class ScatterExplorerView{
         this.featureClickCb = cb;
     }
 
-    generateRandomStateArray(){
-        const numRand = Math.round(Math.random() * 10);
-        var randomIndex = [];
-        for(var i = 0; i < numRand; i++){
-            var tempRand = Math.round(Math.random()*50);
-            if(!randomIndex.includes(tempRand))
-                randomIndex.push(tempRand);
-        }
-        var states = [];
-        randomIndex.forEach(i => states.push(this.fullStates()[i]));
-        return states;
-    }
-
-    fullStates(){ return [
-        "ALABAMA",
-        "ALASKA",
-        "ARIZONA",
-        "ARKANSAS",
-        "CALIFORNIA",
-        "COLORADO",
-        "CONNECTICUT",
-        "DELAWARE",
-        "FLORIDA",
-        "GEORGIA",
-        "HAWAII",
-        "IDAHO",
-        "ILLINOIS",
-        "INDIANA",
-        "IOWA",
-        "KANSAS",
-        "KENTUCKY",
-        "LOUISIANA",
-        "MAINE",
-        "MARYLAND",
-        "MASSACHUSETTS",
-        "MICHIGAN",
-        "MINNESOTA",
-        "MISSISSIPPI",
-        "MISSOURI",
-        "MONTANA",
-        "NEBRASKA",
-        "NEVADA",
-        "NEW HAMPSHIRE",
-        "NEW JERSEY",
-        "NEW MEXICO",
-        "NEW YORK",
-        "NORTH CAROLINA",
-        "NORTH DAKOTA",
-        "OHIO",
-        "OKLAHOMA",
-        "OREGON",
-        "PENNSYLVANIA",
-        "RHODE ISLAND",
-        "SOUTH CAROLINA",
-        "SOUTH DAKOTA",
-        "TENNESSEE",
-        "TEXAS",
-        "UTAH",
-        "VERMONT",
-        "VIRGINIA",
-        "WASHINGTON",
-        "WEST VIRGINIA",
-        "WISCONSIN",
-        "WYOMING"
-      ]}
-
+    
 }
