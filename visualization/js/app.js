@@ -17,35 +17,37 @@ var promises = [
 
 Promise.all(promises).then(function(files) {
 
-    var ans = {};
-    files[3].map(function(x){
-        ans[x.state] = Math.round(Math.random() - 0.3);
-        return ans;
+    /* Initializes global state */
+    fullData = files[1];
+    filteredData = fullData; // TODO: not working
+    initializeFilters(files[2], files[1]);
+
+    // state of selected states and features
+    statesStatus = {};
+    files[3].forEach(x => {
+        statesStatus[x.state] = Math.round(Math.random() - 0.4);
     })
-    statesStatus = ans;
     currentFeatures = ["talent_rank"];
     currentStates = getCurrentStates(statesStatus);
 
+    /* Initializes map */
     let mapOpts = {
         element: document.querySelector("#map"),
         geometry: files[0],
-        data: files[1],
+        data: fullData,
         metadata: files[2],
         ranks: files[3],
         currentStates: currentStates,
         currentFeatures: currentFeatures
     }
 
-    fullData = files[1];
-
     map = new MapView(mapOpts);
     map.setStateClickCb(stateClickCb);
 
-    initializeFilters(files[2], files[1])
-
+    /* Initializes scatter */
     let scatterExplorerOpts = {
         element: document.querySelector("#scatter-explorer"),
-        data: files[1],
+        data: fullData,
         metadata: files[2],
         objectId: "state",
         currentStates: currentStates,
@@ -54,7 +56,6 @@ Promise.all(promises).then(function(files) {
 
     scatterExplorer = new ScatterExplorerView(scatterExplorerOpts); 
     scatterExplorer.setFeatureClickCb(featureClickCb);
-
 
 })
 
@@ -68,12 +69,14 @@ var getCurrentStates = function(statesStatus){
     return temp;
 }
 
-// callbacks
+
+/* Set callbacks */
+
 var stateClickCb = function(state){
     statesStatus[state.properties.NAME.toUpperCase()] ^= true;
     currentStates = getCurrentStates(statesStatus);
     
-    map.updateMapData(currentStates, currentFeatures);
+    map.updateMapData(filteredData, currentStates, currentFeatures);
     scatterExplorer.updateScatterData(filteredData, currentStates, currentFeatures);
 }  
 
@@ -82,11 +85,12 @@ var featureClickCb = function(feature){
     if(currentFeatures.includes(feature)){
     }else{
     }
-    map.updateMapData(currentStates, currentFeatures);
+    map.updateMapData(filteredData, currentStates, currentFeatures);
     scatterExplorer.updateScatterData(filteredData, currentStates, currentFeatures);
 }  
 
-// HTML events handling
+
+/* HTML events handling */
 
 $(document.body).on('change', '.rank_toggle' ,function(){
     uncheckAllSubChekcs();
@@ -127,7 +131,7 @@ var uncheckAllRanksChecks = function(){
 
 //filter setup
 
-function initializeFilters(ranks_meta,data)
+function initializeFilters(ranks_meta, data)
 {
     for(var i = 0 ; i < ranks_meta.length ; i++){
         var rank = ranks_meta[i];
@@ -188,13 +192,15 @@ function min_max(data,column){
 
 var filterData = function(){
     filteredData = fullData.slice();
+    //console.log(sliderValues);
     for(var column_id in sliderValues){
         filteredData = $.grep(filteredData, function(d){ 
             return +d[column_id] >= sliderValues[column_id][0] && +d[column_id] <= sliderValues[column_id][1]; 
         });
     }
-
+    //console.log(filteredData);
     scatterExplorer.updateScatterData(filteredData, currentStates, currentFeatures);
+    map.updateMapData(filteredData, currentStates, currentFeatures);
     
 }
 

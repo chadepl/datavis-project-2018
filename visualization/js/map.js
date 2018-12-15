@@ -25,7 +25,7 @@ class MapView {
              .attr("height", this.height);
 
         this.projection = d3.geoAlbersUsa()
-            .scale(1000) // TODO: make this dynamic
+            .scale(800) // TODO: make this dynamic
             .translate([this.width/2, this.height/2]);
         this.path = d3.geoPath().projection(this.projection);
         
@@ -46,7 +46,8 @@ class MapView {
         this.redrawMap();
     }
 
-    updateMapData(states, features){
+    updateMapData(filteredData, states, features){
+        this.currentData = filteredData;
         this.currentStates = states;
         this.currentFeatures = features;
 
@@ -57,10 +58,15 @@ class MapView {
     redrawMap(){
 
         // 1. first all the logic that its needed to print the correct color scale and shapes, etc
-        var feature_info = this.metadata.filter(d => d.column_id == this.currentFeatures[0])[0];
-        this.indexColorScale = d3.scaleSequential(d3["interpolate" + feature_info.color_scheme]).domain([50, 1])
-        this.drawLegend(this.indexColorScale);
+        if(this.currentFeatures.length == 1){
+            var feature_info = this.metadata.filter(d => d.column_id == this.currentFeatures[0])[0];
+            this.indexColorScale = d3.scaleSequential(d3["interpolate" + feature_info.color_scheme]).domain([50, 1])
+        }else if (this.currentFeatures.length > 1) {
+            this.indexColorScale = d3.scaleSequential(d3.interpolateRdPu).domain([50, 1])
+        }
 
+        this.drawLegend(this.indexColorScale);
+    
         /*var data = this.ranks.map(d => {
             var obj = {"state": d.state};
             this.indexToDisplay.forEach(index => {
@@ -86,16 +92,20 @@ class MapView {
         // Fill can change if features change and stroke if state changes
         this.states_shapes
             .attr("fill", d => {
-                var stateInfo = this.findStateInfo(d.properties.NAME.toUpperCase(), this.data, this.currentFeatures[0]);
+                var stateInfo = this.findStateInfo(d.properties.NAME.toUpperCase(), this.data, this.currentFeatures);
                 if(stateInfo){
                     // add texture to selected elements
                     var texture = textures.circles().complement().background(this.indexColorScale(stateInfo));
                     this.svg.call(texture);
-                    if(this.currentStates.includes(d.properties.NAME.toUpperCase())){
-                        return texture.url();
+                    if(this.currentData.map(d => d.state).includes(d.properties.NAME.toUpperCase())){
+                        if(this.currentStates.includes(d.properties.NAME.toUpperCase())){
+                            return texture.url();
+                        }else{
+                            return this.indexColorScale(stateInfo);
+                        }
                     }else{
-                        return this.indexColorScale(stateInfo);
-                    }
+                        return "none";
+                    }                    
                 }else{
                     return "white";
                 }       
@@ -103,14 +113,24 @@ class MapView {
     }
 
 
-    findStateInfo(stateName, data, accessor){
-        for(var i = 0; i < data.length; i++){
-            if(data[i].state == stateName) {
-                return data[i][accessor];
-            };
+    findStateInfo(stateName, data, features){
+        if(features.length == 1){
+            for(var i = 0; i < data.length; i++){
+                if(data[i].state == stateName) {
+                    return data[i][features[0]];
+                };
+            }
+        }else{
+            for(var i = 0; i < data.length; i++){
+                if(data[i].state == stateName) {
+                    var average = 0;
+                    features.forEach(d => average += +data[i][d]);
+                    console.log(average/features.length);
+                    return average/features.length;
+                };
+            }
         }
     }
-
    
     drawTitle(featuresOnDisplay){
 
@@ -310,7 +330,6 @@ class MapView {
     // setters
 
     setStateClickCb(cb){
-        console.log("entered");
         this.stateClickCb = cb;
     }
 
