@@ -18,7 +18,6 @@ class ScatterExplorerView{
             .filter(d => d.hierarchy == "none" && d.column_id != "state")
             .map(d => d.column_id);
 
-        //this.hierarchy = 
         console.log(this.chartData);
         console.log(this.currentStates);
         console.log(this.currentFeatures);
@@ -41,10 +40,15 @@ class ScatterExplorerView{
         this.statesGridLines = this.scatter.append("g").attr("class", "state-grid-lines");
         this.scatterPoints = this.scatter.append("g").attr("class", "scatter-points");
 
-
-        this.featuresScale = d3.scalePoint().range([this.height - this.margin.bottom - this.margin.top, 0]);
-        this.statesScale = d3.scalePoint().range([0, this.width - this.margin.left - this.margin.right]);
+        this.featuresScale = d3.scaleBand().range([this.height - this.margin.bottom - this.margin.top, 0]);
+        this.statesScale = d3.scaleBand().range([0, this.width - this.margin.left - this.margin.right]);
         this.featuresSizeScales = {};
+        this.featuresColorScales = {};
+
+        // tooltip
+        this.div = d3.select(this.element).append("div")	
+            .attr("class", "tooltip")				
+            .style("opacity", 0);
 
         this.updateScatterData(this.currentStates, this.currentFeatures);
     }
@@ -57,21 +61,6 @@ class ScatterExplorerView{
 
         // {state: ALABAMA, talent_rank: 20, population_rank: 10}
 
-        /*this.chartData = [];
-        this.data.forEach(d => {
-            if(this.currentStates.includes(d.state)){
-                d3.entries(d).forEach(f => {
-                    var temp = {state: d.state};
-                    if(this.allFeaturesOnDisplay.includes(f.key)){
-                        temp["feature"] = f.key;
-                        temp["value"] = +f.value;
-                        this.chartData.push(temp);
-                    }
-                })
-            }
-            
-        });*/
-
         this.chartData = this.data;
         this.chartData = this.data.filter(d => this.currentStates.includes(d.state));
         this.chartData = this.chartData.map(d => {
@@ -80,24 +69,37 @@ class ScatterExplorerView{
             return obj;
         })
         console.log(this.chartData);
-        this.chartData.sort((a,b) => +a[this.currentFeatures[0]] - b[this.currentFeatures[0]]);
+        this.chartData.sort((a,b) => +b[this.currentFeatures[0]] - a[this.currentFeatures[0]]);
         console.log(this.chartData);
 
         var orderedStates = this.chartData.map(d => d.state);
         
         // Update scales
-        this.featuresScale.domain(this.allFeaturesOnDisplay);
-        this.statesScale.domain(orderedStates);
+        this.featuresScale.domain(this.allFeaturesOnDisplay)
+            .paddingOuter(10);
+        this.statesScale.domain(orderedStates)
+            .paddingOuter(5);
+        this.barsWidth = this.statesScale.bandwidth() * 0.5;
 
         this.featuresSizeScales = {};
         this.allFeaturesOnDisplay.forEach(f => {
             var scale = d3.scaleLinear();
             let allValuesFeature = this.chartData.map(d => +d[f]);
             var domain = d3.extent(allValuesFeature);
-            scale.domain(domain).range([5, 20]);
+            scale.domain(domain).range([(this.featuresScale.bandwidth()*2/3) - 2, 5]);
             this.featuresSizeScales[f] = scale;
         });
         console.log(this.featuresSizeScales);
+
+        this.featuresColorScales = {};
+        this.allFeaturesOnDisplay.forEach(f => {
+            var feature_info = this.metadata.filter(d => d.column_id == f)[0];
+            var scale = d3.scaleSequential(d3["interpolate" + feature_info.color_scheme]);
+            let allValuesFeature = this.chartData.map(d => +d[f]);
+            var domain = d3.extent(allValuesFeature);
+            scale.domain(domain);
+            this.featuresColorScales[f] = scale;
+        });
     
         this.drawScatter();
 
@@ -134,9 +136,18 @@ class ScatterExplorerView{
             .data(this.chartData, d => d.state);
 
         // States that were unselected
-        verticalGroups.exit().remove();
+        /*verticalGroups.exit().remove();
   
-        verticalGroups.selectAll("circle").transition(t).attr("cx", d => this.statesScale(d.state));
+        verticalGroups.selectAll("circle")
+        .transition(t)
+            .attr("cx", d => this.statesScale(d.state))
+            .attr("fill", d => {
+                if(d.feature == this.currentFeatures[0]){
+                    return this.featuresColorScales[d.feature](d.value);
+                }else{
+                    return "gray";
+                }
+            })
   
         verticalGroups.enter()
             .append("g")
@@ -152,10 +163,93 @@ class ScatterExplorerView{
             .attr("cy", d => this.featuresScale(d.feature))
             .attr("r", d => this.featuresSizeScales[d.feature](d.value))
             .attr("cx", d => this.statesScale(d.state))
+            .attr("stroke", "black")
+            .attr("stroke-width", "2")
+            .attr("fill", d => {
+                if(d.feature == this.currentFeatures[0]){
+                    return this.featuresColorScales[d.feature](d.value);
+                }else{
+                    return "gray";
+                }
+            })
             .on("click", function(d){
                 console.log(d);
+            })
+            .on("mouseover", d => {	
+                this.div.transition()		
+                    .duration(200)		
+                    .style("opacity", .9);		
+                this.div.html(this.generateTooltipHTML(d.state, d.feature))	
+                    .style("left", (d3.event.pageX) + "px")		
+                    .style("top", (d3.event.pageY - 28) + "px");	
+                })					
+            .on("mouseout", d => {		
+                this.div.transition()		
+                    .duration(200)		
+                    .style("opacity", 0);	
+            });;*/
+
+        // Bars experiment
+
+        verticalGroups.exit().remove();
+
+        verticalGroups.selectAll("rect")
+        .transition(t)
+            .attr("x", d => this.statesScale(d.state) - (this.barsWidth/2))
+            .attr("fill", d => {
+                if(d.feature == this.currentFeatures[0]){
+                    return this.featuresColorScales[d.feature](d.value);
+                }else{
+                    return "gray";
+                }
+            })
+
+        verticalGroups.enter()
+            .append("g")
+            .selectAll("rect")
+            .data(d => {
+                var state = d.state;
+                return d3.entries(d).filter(f => f.key != "state").map(g => {
+                    return {state: state, feature: g.key, value: g.value};
+                })
+            })
+            .enter()
+            .append("rect")
+            .attr("y", d => this.featuresScale(d.feature))// - (this.featuresScale.bandwidth()/2))
+            .attr("height", d => this.featuresSizeScales[d.feature](d.value))
+            .attr("width",  this.barsWidth)
+            .attr("x", d => this.statesScale(d.state) - (this.barsWidth/2))
+            .attr("stroke", "black")
+            .attr("stroke-width", "2")
+            .attr("fill", d => {
+                if(d.feature == this.currentFeatures[0]){
+                    return this.featuresColorScales[d.feature](d.value);
+                }else{
+                    return "gray";
+                }
+            })
+            .on("click", function(d){
+                console.log(d);
+            })
+            .on("mouseover", d => {	
+                this.div.transition()		
+                    .duration(200)		
+                    .style("opacity", .9);		
+                this.div.html(this.generateTooltipHTML(d.state, d.feature))	
+                    .style("left", (d3.event.pageX) + "px")		
+                    .style("top", (d3.event.pageY - 28) + "px");	
+                })					
+            .on("mouseout", d => {		
+                this.div.transition()		
+                    .duration(200)		
+                    .style("opacity", 0);	
             });;
 
+
+        
+        
+        // Axis 
+        
         d3.select(".axis-features").remove();
         
         var axisFeatures = this.svg.append("g").attr("class", "axis-features")
@@ -186,24 +280,47 @@ class ScatterExplorerView{
             .attr("transform", "translate("+this.margin.left+","+(this.height - this.margin.bottom + 30)+")")
             .call(d3.axisBottom(this.statesScale));
 
+    }
+
+    generateTooltipHTML(state, feature){
+
+        var html = "";
+
+        var features = this.metadata
+            .filter(d => d.hierarchy == feature && d.enabled)
+            .map(d => d.column_id);
+        var stateInfo = this.data
+            .filter(d => d.state == state)[0];
+        var tooltipData = [];
+        features.forEach(f => {
+            if(f != "state")
+                tooltipData.push({feature : f, value: stateInfo[f]});
+        })
+
+        html += "<h2>"+ state +"</h2>";
+        html += "<h3>"+ feature +"</h3>";
+
+        html += "<table style='width:100%'>"
+        html += "<tr>"
+        html += "<th>feature</th>"
+        html += "<th>value</th>"
+        html += "</tr>"
         
+        tooltipData.forEach(d => {
+            html += "<tr>"
+            html += "<td>" + d.feature + "</td>"; 
+            html += "<td>"+ d.value + "</td>";
+            html += "<tr>"
+        });
+
+        html += "</table>"
+        return html;
+            
     }
 
     handleFeatureClick(feature){
 
         this.featureClickCb(feature);
-        
-        //console.log(feature);
-        //console.log(this.chartData);
-        //this.chartData.sort((a, b) => +a[feature] < +b[feature]);
-        //console.log(this.chartData);
-
-        //console.log(feature);
-        //this.scatterPoints.selectAll("g")
-        //    .sort(function(a, b){return +a[feature] - +b[feature]; })
-        //    .selectAll("circle")
-        //    .transition()
-        //    .attr("cx", d => this.statesScale(d.state));
     
     }
 
@@ -211,70 +328,5 @@ class ScatterExplorerView{
         this.featureClickCb = cb;
     }
 
-    generateRandomStateArray(){
-        const numRand = Math.round(Math.random() * 10);
-        var randomIndex = [];
-        for(var i = 0; i < numRand; i++){
-            var tempRand = Math.round(Math.random()*50);
-            if(!randomIndex.includes(tempRand))
-                randomIndex.push(tempRand);
-        }
-        var states = [];
-        randomIndex.forEach(i => states.push(this.fullStates()[i]));
-        return states;
-    }
-
-    fullStates(){ return [
-        "ALABAMA",
-        "ALASKA",
-        "ARIZONA",
-        "ARKANSAS",
-        "CALIFORNIA",
-        "COLORADO",
-        "CONNECTICUT",
-        "DELAWARE",
-        "FLORIDA",
-        "GEORGIA",
-        "HAWAII",
-        "IDAHO",
-        "ILLINOIS",
-        "INDIANA",
-        "IOWA",
-        "KANSAS",
-        "KENTUCKY",
-        "LOUISIANA",
-        "MAINE",
-        "MARYLAND",
-        "MASSACHUSETTS",
-        "MICHIGAN",
-        "MINNESOTA",
-        "MISSISSIPPI",
-        "MISSOURI",
-        "MONTANA",
-        "NEBRASKA",
-        "NEVADA",
-        "NEW HAMPSHIRE",
-        "NEW JERSEY",
-        "NEW MEXICO",
-        "NEW YORK",
-        "NORTH CAROLINA",
-        "NORTH DAKOTA",
-        "OHIO",
-        "OKLAHOMA",
-        "OREGON",
-        "PENNSYLVANIA",
-        "RHODE ISLAND",
-        "SOUTH CAROLINA",
-        "SOUTH DAKOTA",
-        "TENNESSEE",
-        "TEXAS",
-        "UTAH",
-        "VERMONT",
-        "VIRGINIA",
-        "WASHINGTON",
-        "WEST VIRGINIA",
-        "WISCONSIN",
-        "WYOMING"
-      ]}
-
+    
 }
