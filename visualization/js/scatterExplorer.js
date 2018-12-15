@@ -18,10 +18,10 @@ class ScatterExplorerView{
             .filter(d => d.hierarchy == "none" && d.column_id != "state")
             .map(d => d.column_id);
 
-        console.log(this.chartData);
-        console.log(this.currentStates);
-        console.log(this.currentFeatures);
-        console.log(this.allFeaturesOnDisplay);
+        // console.log(this.chartData);
+        // console.log(this.currentStates);
+        // console.log(this.currentFeatures);
+        // console.log(this.allFeaturesOnDisplay);
 
         // Visualization parameters
 
@@ -55,11 +55,11 @@ class ScatterExplorerView{
 
     updateScatterData(filteredData, states, features){
 
-        console.log("update");
         this.currentStates = states;
         this.currentFeatures = features;
 
         // {state: ALABAMA, talent_rank: 20, population_rank: 10}
+        console.log(filteredData);
 
         this.chartData = filteredData;
         this.chartData = filteredData.filter(d => this.currentStates.includes(d.state));
@@ -68,10 +68,8 @@ class ScatterExplorerView{
             this.allFeaturesOnDisplay.forEach(f => obj[f] = d[f]);
             return obj;
         })
-        console.log(this.chartData);
         this.chartData.sort((a,b) => +b[this.currentFeatures[0]] - a[this.currentFeatures[0]]);
         console.log(this.chartData);
-
         var orderedStates = this.chartData.map(d => d.state);
         
         // Update scales
