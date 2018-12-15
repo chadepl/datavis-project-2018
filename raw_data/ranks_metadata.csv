@@ -23,8 +23,8 @@ TRUE,stability_rank,corporate_taxes,corporate taxes rank,ordinal sequential,YlOr
 TRUE,stability_rank,individual_taxes,individual taxes rank,ordinal sequential,YlOrBr,FALSE
 TRUE,stability_rank,sales_taxes, sales taxes rank,ordinal sequential,YlOrBr,FALSE
 TRUE,stability_rank,property_taxes,property taxes rank,ordinal sequential,YlOrBr,FALSE
-TRUE,stability_rank,"violent crime per 100000 citizens","violent crime per 100000 citizens",quantitative,YlOrBr,TRUE
-TRUE,stability_rank,"property crime per 100000 citizens","property crime per 100000 citizens",quantitative,YlOrBr,TRUE
+TRUE,stability_rank,violent_crime_per_100000_citizens,violent crime per 100000 citizens,quantitative,YlOrBr,TRUE
+TRUE,stability_rank,property_crime_per_100000_citizens,property crime per 100000 citizens,quantitative,YlOrBr,TRUE
 FALSE,stability_rank,violent_crimes_rank,violent crimes rank,ordinal sequential,YlOrBr,FALSE
 FALSE,stability_rank,property_crimes_rank,property crimes rank,ordinal sequential,YlOrBr,FALSE
 TRUE,stability_rank,unemployment,unemployment (%),ordinal sequential,YlOrBr,TRUE

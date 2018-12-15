@@ -137,8 +137,8 @@ function initializeFilters(ranks_meta,data)
 
             var minmax = min_max(data,rank.column_id);
             var steps = Math.floor((minmax[1] - minmax[0])/20);
-            $("#filters").append("<input type='hidden' id='"+rank.column_id+"' class='slider-input' /><br><br>")
-            $("#"+rank.column_id+"").jRange({
+            $("#filters").append("<input type='hidden' id='"+rank.column_id+"_slider' class='slider-input' /><br>")
+            $("#"+rank.column_id+"_slider").jRange({
                 from: minmax[0],
                 to: minmax[1],
                 format: '%s',
@@ -148,6 +148,9 @@ function initializeFilters(ranks_meta,data)
                 isRange : true,
                 onstatechange: onSliderChange
             });
+            if($("#"+rank.column_id+"_slider").length == 0){
+                console.log(rank.column_id);
+            }
         }
     }
 }
@@ -173,10 +176,6 @@ function min_max(data,column){
        }
     }
     var answer = [min,max];
-    console.log(answer);
-    // for(var i = 0 ; i < answer.length ; i ++)
-    //     if(typeof answer[i] == "string")
-    //         console.log(column)
     return answer;
 }
 
