@@ -72,8 +72,6 @@ var getCurrentStates = function(statesStatus){
 // callbacks
 var stateClickCb = function(state){
     statesStatus[state.properties.NAME.toUpperCase()] ^= true;
-    console.log(statesStatus);
-    console.log(state);
     currentStates = getCurrentStates(statesStatus);
     
     map.updateMapData(currentStates, currentFeatures);
@@ -82,11 +80,12 @@ var stateClickCb = function(state){
 
 var featureClickCb = function(feature){
     console.log(feature);
+    currentFeatures[0] = feature;
     if(currentFeatures.includes(feature)){
-
     }else{
-        currentFeatures.push(feature)
     }
+    map.updateMapData(currentStates, currentFeatures);
+    scatterExplorer.updateScatterData(currentStates, currentFeatures);
 }  
 
 // HTML events handling
