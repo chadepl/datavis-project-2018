@@ -59,7 +59,7 @@ class ScatterExplorerView{
         this.currentFeatures = features;
 
         // {state: ALABAMA, talent_rank: 20, population_rank: 10}
-        console.log(filteredData);
+        // console.log(filteredData);
 
         this.chartData = filteredData;
         this.chartData = filteredData.filter(d => this.currentStates.includes(d.state));
@@ -69,7 +69,7 @@ class ScatterExplorerView{
             return obj;
         })
         this.chartData.sort((a,b) => +b[this.currentFeatures[0]] - a[this.currentFeatures[0]]);
-        console.log(this.chartData);
+        // console.log(this.chartData);
         var orderedStates = this.chartData.map(d => d.state);
         
         // Update scales
