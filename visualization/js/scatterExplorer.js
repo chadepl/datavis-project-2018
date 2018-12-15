@@ -79,10 +79,15 @@ class ScatterExplorerView{
             this.allFeaturesOnDisplay.forEach(f => obj[f] = d[f]);
             return obj;
         })
+        console.log(this.chartData);
+        this.chartData.sort((a,b) => +a[this.currentFeatures[0]] - b[this.currentFeatures[0]]);
+        console.log(this.chartData);
+
+        var orderedStates = this.chartData.map(d => d.state);
         
         // Update scales
         this.featuresScale.domain(this.allFeaturesOnDisplay);
-        this.statesScale.domain(this.currentStates);
+        this.statesScale.domain(orderedStates);
 
         this.featuresSizeScales = {};
         this.allFeaturesOnDisplay.forEach(f => {
@@ -160,7 +165,7 @@ class ScatterExplorerView{
             .append("g").attr("class", "feature-label")
             .attr("transform", d => "translate(0,"+this.featuresScale(d)+")")
             .on("click", d => {
-                this.sortByFeature(d);
+                this.handleFeatureClick(d);
             });
             
         axisFeatures.append("text")
@@ -184,9 +189,22 @@ class ScatterExplorerView{
         
     }
 
-    sortByFeature(feature){
-        console.log(feature);
-        //this.scatterPoints.selectAll("g").
+    handleFeatureClick(feature){
+
+        this.featureClickCb(feature);
+        
+        //console.log(feature);
+        //console.log(this.chartData);
+        //this.chartData.sort((a, b) => +a[feature] < +b[feature]);
+        //console.log(this.chartData);
+
+        //console.log(feature);
+        //this.scatterPoints.selectAll("g")
+        //    .sort(function(a, b){return +a[feature] - +b[feature]; })
+        //    .selectAll("circle")
+        //    .transition()
+        //    .attr("cx", d => this.statesScale(d.state));
+    
     }
 
     setFeatureClickCb(cb){
