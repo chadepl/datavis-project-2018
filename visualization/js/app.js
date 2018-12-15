@@ -109,7 +109,7 @@ var uncheckAllRanksChecks = function(){
 // callbacks
 var stateClickCb = function(state){
     this.states[state.properties.NAME.toUpperCase()] ^= true;
-
+    
     console.log("cb");
     if(sidePaneMode == "radar"){
         console.log(state);

@@ -2,13 +2,9 @@ class MapView {
     constructor(opts){
 
         this.cb = null;
-        this.geometry = opts.data.geometry;
-        this.population = opts.data.population;
-        this.stability = opts.data.stability;
-        this.talent = opts.data.talent;
-        this.development = opts.data.development;
-        this.ranks = opts.data.ranks;
-
+        this.data = opts.data;
+        this.metadata = opts.metadata;
+        this.ranks = opts.ranks;
         this.element = opts.element;
 
         // Preprocessing (should not be done by this component)
@@ -257,6 +253,10 @@ class MapView {
                 }
             });
 
+    }
+
+    changeFill(state){
+        
     }
 
     removePopulationLayer(){
