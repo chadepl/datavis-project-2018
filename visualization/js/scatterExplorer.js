@@ -66,6 +66,7 @@ class ScatterExplorerView{
             scale.domain(domain);
             this.featuresColorScales[f] = scale;
         });
+        this.featuresColorScales["average"] = d3.scaleSequential(d3.interpolateRdPu).domain([50, 1]);
 
         // tooltip
         this.tooltip = d3.select(this.element).append("div")	
@@ -84,12 +85,18 @@ class ScatterExplorerView{
         this.chartData = this.chartData.filter(d => this.currentStates.includes(d.state));
         this.chartData = this.chartData.map(d => {
             var obj = {state: d.state};
-            this.allFeaturesOnDisplay.forEach(f => obj[f] = d[f]);
+            var average = 0;
+            this.allFeaturesOnDisplay.forEach(f => {
+                obj[f] = d[f];
+                if (this.currentFeatures.includes(f))
+                    average += +d[f];
+                obj["average"] = average/this.currentFeatures.length;
+            });
             return obj;
-        })
+        });
         
         // sort by the last feature that was added
-        this.chartData.sort((a,b) => +b[this.currentFeatures[this.currentFeatures.length - 1]] - a[this.currentFeatures[this.currentFeatures.length - 1]]);
+        this.chartData.sort((a,b) => +b["average"] - a["average"]);
         var orderedStates = this.chartData.map(d => d.state);
         
         // update scales
@@ -138,8 +145,9 @@ class ScatterExplorerView{
             .selectAll("rect")
             .data(d => {
                 var state = d.state;
-                return d3.entries(d).filter(f => f.key != "state").map(g => {
-                    return {state: state, feature: g.key, value: g.value};
+                var average = d.average;
+                return d3.entries(d).filter(f => f.key != "state" && f.key != "average").map(g => {
+                    return {state: state, feature: g.key, value: g.value, average: average};
                 })
              })
         
@@ -152,10 +160,18 @@ class ScatterExplorerView{
             .attr("stroke", "black")
             .attr("stroke-width", "2")
             .attr("fill", d => {
-                if(d.feature == this.currentFeatures[0]){
-                    return this.featuresColorScales[d.feature](d.value);
+                if(this.currentFeatures.length > 1){
+                    if(this.currentFeatures.includes(d.feature)){
+                        return this.featuresColorScales["average"](d.average);
+                    }else{
+                        return "gray";
+                    }
                 }else{
-                    return "gray";
+                    if(this.currentFeatures.includes(d.feature)){
+                        return this.featuresColorScales[d.feature](d.value);
+                    }else{
+                        return "gray";
+                    }
                 }
             })
             .on("click", function(d){
@@ -181,10 +197,18 @@ class ScatterExplorerView{
             .attr("x", d => this.statesScale(d.state) + (this.statesScale.bandwidth()/2) - (this.barsWidth/2))
             .attr("width",  this.barsWidth)
             .attr("fill", d => {
-                if(d.feature == this.currentFeatures[0]){
-                    return this.featuresColorScales[d.feature](d.value);
+                if(this.currentFeatures.length > 1){
+                    if(this.currentFeatures.includes(d.feature)){
+                        return this.featuresColorScales["average"](d.average);
+                    }else{
+                        return "gray";
+                    }
                 }else{
-                    return "gray";
+                    if(this.currentFeatures.includes(d.feature)){
+                        return this.featuresColorScales[d.feature](d.value);
+                    }else{
+                        return "gray";
+                    }
                 }
             })
 
@@ -237,6 +261,8 @@ class ScatterExplorerView{
             .style("text-anchor", "start");
 
         this.scatterArea.select(".axis-states").select(".domain").remove();
+
+        this.scatterArea.select(".axis-states").selectAll("text").on("mouseover", d => console.log(d));
 
     }
 

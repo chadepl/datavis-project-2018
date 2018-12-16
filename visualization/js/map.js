@@ -62,7 +62,7 @@ class MapView {
             var feature_info = this.metadata.filter(d => d.column_id == this.currentFeatures[0])[0];
             this.indexColorScale = d3.scaleSequential(d3["interpolate" + feature_info.color_scheme]).domain([50, 1])
         }else if (this.currentFeatures.length > 1) {
-            this.indexColorScale = d3.scaleSequential(d3.interpolateRdPu).domain([50, 1])
+            this.indexColorScale = d3.scaleSequential(d3.interpolateRdPu).domain([50, 1]);
         }
 
         this.drawLegend(this.indexColorScale);

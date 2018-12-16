@@ -81,9 +81,15 @@ var stateClickCb = function(state){
 }  
 
 var featureClickCb = function(feature){
-    currentFeatures[0] = feature;
-    if(currentFeatures.includes(feature)){
-    }else{
+    var wasSelected = false;
+    currentFeatures.forEach((f, i) => {
+        if(f == feature){
+            currentFeatures.splice(i, 1);
+            wasSelected = true;
+        }
+    });
+    if(!wasSelected){
+        currentFeatures.push(feature);
     }
     map.updateMapData(filteredData, currentStates, currentFeatures);
     scatterExplorer.updateScatterData(filteredData, currentStates, currentFeatures);
