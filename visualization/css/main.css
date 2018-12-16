@@ -23,6 +23,11 @@
   border: 1px solid #ccc;
 }
 
+.f_name{
+  margin-bottom: 20px;
+  color: #ccc;
+}
+
 .togg:hover{
   cursor: pointer;
 }

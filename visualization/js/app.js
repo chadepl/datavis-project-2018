@@ -145,7 +145,8 @@ function initializeFilters(ranks_meta, data)
 
             var minmax = min_max(data,rank.column_id);
             var steps = Math.floor((minmax[1] - minmax[0])/20);
-            $("#filters").append("<input type='hidden' id='"+rank.column_id+"_slider' class='slider-input' /><br>")
+            var $filterContainer = "<div class='f_container'><div class='f_name'>" + rank.column_display_name + "</div>";
+            $("#filters").append($filterContainer + "<input type='hidden' id='"+rank.column_id+"_slider' class='slider-input' /><br></div>")
             $("#"+rank.column_id+"_slider").jRange({
                 from: minmax[0],
                 to: minmax[1],
