@@ -20,7 +20,7 @@ class ScatterExplorerView{
 
         this.width = d3.select(this.element).node().getBoundingClientRect().width;
         this.height = d3.select(this.element).node().getBoundingClientRect().height;
-        this.margin = {top: 30, right: 100, bottom: 50, left:150}; // fix hardcoding
+        this.margin = {top: 30, right: 100, bottom: 70, left:150}; // fix hardcoding
 
         this.svg = d3.select(this.element)
             .append("svg")
@@ -205,8 +205,14 @@ class ScatterExplorerView{
 
         d3.select(".axis-states").remove();
         this.scatter.append("g").attr("class", "axis-states")
-            .attr("transform", "translate(0,"+(this.height - this.margin.bottom)+")")
-            .call(d3.axisBottom(this.statesScale));
+            .attr("transform", "translate(0,"+(this.height - this.margin.bottom - this.margin.top)+")")
+            .call(d3.axisBottom(this.statesScale))
+            .selectAll("text")
+            .attr("y", 12)
+            .attr("x", 8)
+            .attr("dy", ".35em")
+            .attr("transform", "rotate(45)")
+            .style("text-anchor", "start");
 
     }
 
