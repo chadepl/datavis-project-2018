@@ -20,18 +20,30 @@ class ScatterExplorerView{
 
         this.width = d3.select(this.element).node().getBoundingClientRect().width;
         this.height = d3.select(this.element).node().getBoundingClientRect().height;
-        this.margin = {top: 30, right: 100, bottom: 70, left:150}; // fix hardcoding
+        this.margin = {top: 30, right: 100, bottom: 70, left:150}; 
+        this.scatterWidth = this.width - this.margin.left - this.margin.right;
+        this.scatterHeight = this.height - this.margin.top - this.margin.bottom;
 
         this.svg = d3.select(this.element)
             .append("svg")
             .attr("width", this.width)
             .attr("height", this.height);
 
-        this.scatter = this.svg.append("g")
+        this.scatterArea = this.svg.append("g")
             .attr("transform", "translate("+this.margin.left+","+this.margin.top+")")
 
-        this.statesGridLines = this.scatter.append("g").attr("class", "state-grid-lines");
-        this.scatterPoints = this.scatter.append("g").attr("class", "scatter-points");
+        this.scatterArea.append("rect")
+            .attr("x", 0).attr("y", 0)
+            .attr("width", this.scatterWidth).attr("height", this.scatterHeight)
+            .attr("fill", "none")
+            .attr("stroke", "gray");
+
+        this.statesGridLines = this.scatterArea
+            .append("g")
+            .attr("class", "state-grid-lines");
+        this.statesGroups = this.scatterArea
+            .append("g")
+            .attr("class", "scatter-groups");
 
         this.featuresScale = d3.scaleBand().domain(this.allFeaturesOnDisplay).range([this.height - this.margin.bottom - this.margin.top, 0]);
         this.statesScale = d3.scaleBand().range([0, this.width - this.margin.left - this.margin.right]);
@@ -39,7 +51,7 @@ class ScatterExplorerView{
         this.featuresSizeScales = {};
         this.allFeaturesOnDisplay.forEach(f => {
             var scale = d3.scaleLinear();
-            let allValuesFeature = this.data.map(d => +d[f]);
+            var allValuesFeature = this.data.map(d => +d[f]);
             var domain = d3.extent(allValuesFeature);
             scale.domain(domain).range([(this.featuresScale.bandwidth()*2/3) - 2, 5]);
             this.featuresSizeScales[f] = scale;
@@ -49,7 +61,7 @@ class ScatterExplorerView{
         this.allFeaturesOnDisplay.forEach(f => {
             var feature_info = this.metadata.filter(d => d.column_id == f)[0];
             var scale = d3.scaleSequential(d3["interpolate" + feature_info.color_scheme]);
-            let allValuesFeature = this.data.map(d => +d[f]);
+            var allValuesFeature = this.data.map(d => +d[f]);
             var domain = d3.extent(allValuesFeature);
             scale.domain(domain);
             this.featuresColorScales[f] = scale;
@@ -85,56 +97,43 @@ class ScatterExplorerView{
         this.barsWidth = this.statesScale.bandwidth() * 0.5;
 
         this.drawScatter();
-
     }
 
     drawScatter(){
 
         var t = d3.transition()
-            .duration(750)
+            .duration(500)
             .ease(d3.easeLinear);
 
-        console.log(this.chartData);
-        var lines = this.statesGridLines.selectAll("line")
+        /* Vertical guide lines */
+
+        var lines = this.statesGridLines
+            .selectAll("line")
             .data(this.chartData);
 
-        lines.transition(t)
-            .attr("x1", d => this.statesScale(d.state))
-            .attr("x2", d => this.statesScale(d.state));
-
         lines.exit().remove();
-        
+
         lines
             .enter()
             .append("line")
-            .attr("x1", d => this.statesScale(d.state))
-            .attr("x2", d => this.statesScale(d.state))
-            .merge(lines)
             .attr("y1",0)
-            .attr("y2",this.height - this.margin.bottom - this.margin.top)
+            .attr("y2",this.scatterHeight)
             .attr("stroke", "gray")
             .attr("stroke-width", "1")
-            .attr("stroke-dasharray", "4 4");
+            .attr("stroke-dasharray", "4 4")
+            .merge(lines).transition(t) // update
+            .attr("x1", d => this.statesScale(d.state) + (this.statesScale.bandwidth()/2))
+            .attr("x2", d => this.statesScale(d.state) + (this.statesScale.bandwidth()/2));
 
-        var verticalGroups = this.scatterPoints.selectAll("g")
+        
+        /* State data groups */
+
+        var verticalGroups = this.statesGroups.selectAll("g")
             .data(this.chartData, d => d.state);
-
-        // Bars experiment
 
         verticalGroups.exit().remove();
 
-        verticalGroups.selectAll("rect")
-        .transition(t)
-            .attr("x", d => this.statesScale(d.state) - (this.barsWidth/2))
-            .attr("fill", d => {
-                if(d.feature == this.currentFeatures[0]){
-                    return this.featuresColorScales[d.feature](d.value);
-                }else{
-                    return "gray";
-                }
-            })
-
-        verticalGroups.enter()
+        var stateGroup  = verticalGroups.enter()
             .append("g")
             .selectAll("rect")
             .data(d => {
@@ -142,13 +141,14 @@ class ScatterExplorerView{
                 return d3.entries(d).filter(f => f.key != "state").map(g => {
                     return {state: state, feature: g.key, value: g.value};
                 })
-            })
-            .enter()
+             })
+        
+        stateGroup.enter()
             .append("rect")
+            .attr("x", d => this.statesScale(d.state) + (this.statesScale.bandwidth()/2) - (this.barsWidth/2))
             .attr("y", d => this.featuresScale(d.feature))// - (this.featuresScale.bandwidth()/2))
             .attr("height", d => this.featuresSizeScales[d.feature](d.value))
             .attr("width",  this.barsWidth)
-            .attr("x", d => this.statesScale(d.state) - (this.barsWidth/2))
             .attr("stroke", "black")
             .attr("stroke-width", "2")
             .attr("fill", d => {
@@ -173,38 +173,60 @@ class ScatterExplorerView{
                 this.tooltip.transition()		
                     .duration(200)		
                     .style("opacity", 0);	
-            });;
+            });
 
+
+        verticalGroups.selectAll("rect")
+        .transition(t)
+            .attr("x", d => this.statesScale(d.state) + (this.statesScale.bandwidth()/2) - (this.barsWidth/2))
+            .attr("width",  this.barsWidth)
+            .attr("fill", d => {
+                if(d.feature == this.currentFeatures[0]){
+                    return this.featuresColorScales[d.feature](d.value);
+                }else{
+                    return "gray";
+                }
+            })
+
+
+        /* Axes */
         
-        // Axis 
-        
+        // axis features
         d3.select(".axis-features").remove();
         
-        var axisFeatures = this.svg.append("g").attr("class", "axis-features")
-            .attr("transform", "translate(0,"+ this.margin.top +")")
+        var axisFeatures = this.scatterArea.append("g").attr("class", "axis-features")
+            .attr("transform", "translate(0, 0)")
             .selectAll(".feature-label")
-            .data(this.allFeaturesOnDisplay).enter()
+            .data(this.allFeaturesOnDisplay)
+        
+            axisFeatures.exit().remove();
+        
+        var axisFeaturesElements = axisFeatures.enter()
             .append("g").attr("class", "feature-label")
-            .attr("transform", d => "translate(0,"+this.featuresScale(d)+")")
+            .attr("transform", d => "translate("+(-this.margin.left)+","+this.featuresScale(d)+")")
             .on("click", d => {
                 this.handleFeatureClick(d);
             });
-            
-        axisFeatures.append("text")
+        
+        axisFeaturesElements.append("rect")
+            .attr("x", (this.margin.left * .10)/2).attr("y", 0)
+            .attr("width", this.margin.left * .90).attr("height", 30)
+            .attr("fill", "none")
+            .attr("stroke", "black")
+            .attr("stroke-width", d => this.currentFeatures.includes(d)? "4" : "1");
+        
+        axisFeaturesElements.append("text")
             .attr("x", 0)
             .attr("y", 0)
             .attr("dx", "0.8em")
-            .attr("dy", "1.5em")
-            .text(d => d);
+            .attr("dy", "1.3em")
+            .attr("font-size", "1.5em")
+            .attr("font-weight", "bold")
+            .text(d => this.metadata.filter(f => f.column_id == d)[0]["column_display_name"]);
 
-        axisFeatures.append("rect")
-            .attr("x", 0).attr("y", 0)
-            .attr("width", this.margin.left - 20).attr("height", 20)
-            .attr("fill", "none")
-            .attr("stroke", "black");
-
+        // axis states
         d3.select(".axis-states").remove();
-        this.scatter.append("g").attr("class", "axis-states")
+        this.scatterArea.append("g").attr("class", "axis-states")
             .attr("transform", "translate(0,"+(this.height - this.margin.bottom - this.margin.top)+")")
             .call(d3.axisBottom(this.statesScale))
             .selectAll("text")
@@ -213,6 +235,8 @@ class ScatterExplorerView{
             .attr("dy", ".35em")
             .attr("transform", "rotate(45)")
             .style("text-anchor", "start");
+
+        this.scatterArea.select(".axis-states").select(".domain").remove();
 
     }
 
@@ -232,7 +256,7 @@ class ScatterExplorerView{
         })
 
         html += "<h2>"+ state +"</h2>";
-        html += "<h3>"+ feature +"</h3>";
+        html += "<h3>"+ feature +": "+ stateInfo[feature] +"</h3>";
 
         html += "<table style='width:100%'>"
         html += "<tr>"
