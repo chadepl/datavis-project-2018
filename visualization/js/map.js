@@ -75,7 +75,7 @@ class MapView {
             .attr("fill", d => {
                 var stateInfo = this.findStateInfo(d.properties.NAME.toUpperCase(), this.data, this.currentFeatures);                
                 if(stateInfo){
-                    console.log(d.properties.NAME.toUpperCase() + " average in map: " + stateInfo);
+                    // console.log(d.properties.NAME.toUpperCase() + " average in map: " + stateInfo);
                     // add texture to selected elements
                     var texture = textures.circles().complement().background(this.indexColorScale(stateInfo));
                     this.svg.call(texture);

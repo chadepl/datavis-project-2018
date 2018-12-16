@@ -144,6 +144,7 @@ function initializeFilters(ranks_meta, data)
         if(rank.filter == "TRUE"){
 
             var minmax = min_max(data,rank.column_id);
+            console.log(minmax);
             var steps = Math.floor((minmax[1] - minmax[0])/20);
             var $filterContainer = "<div class='f_container'><div class='f_name'>" + rank.column_display_name + "</div>";
             $("#filters").append($filterContainer + "<input type='hidden' id='"+rank.column_id+"_slider' class='slider-input' /><br></div>")
@@ -158,6 +159,7 @@ function initializeFilters(ranks_meta, data)
                 ondragend: onSliderChange,
                 sliderName: rank.column_id
             });
+            console.log( $("#"+rank.column_id+"_slider"));
             $("#"+rank.column_id+"_slider").jRange("setValue", minmax[0] + "," + minmax[1])
             sliderValues[rank.column_id] = minmax;
         }
@@ -166,6 +168,7 @@ function initializeFilters(ranks_meta, data)
 
 var onSliderChange = function(args){
     var range = args.value.split(",");
+    console.log(range);
     var sliderName = args.sliderName;
     sliderValues[sliderName] = range.slice();
     filterData();
@@ -190,13 +193,6 @@ function min_max(data,column){
     return answer;
 }
 
-// var filterData = function(column_id, range){
-//     var data = fullData.slice();
-//     var data = $.grep(fullData, function(d){ 
-//         return +d[column_id] >= range[0] && +d[column_id] <= range[1]; 
-//     });
-// }
-
 var filterData = function(){
     filteredData = fullData.slice();
     //console.log(sliderValues);
@@ -209,6 +205,18 @@ var filterData = function(){
     scatterExplorer.updateScatterData(filteredData, currentStates, currentFeatures);
     map.updateMapData(filteredData, currentStates, currentFeatures);
     
+}
+
+// sliding menu stuff
+
+/* Set the width of the side navigation to 250px */
+function openNav() {
+  document.getElementById("mySidenav").style.width = "250px";
+}
+
+/* Set the width of the side navigation to 0 */
+function closeNav() {
+  document.getElementById("mySidenav").style.width = "0";
 }
 
 
