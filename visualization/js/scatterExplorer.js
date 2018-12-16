@@ -162,6 +162,7 @@ class ScatterExplorerView{
             .attr("fill", d => {
                 if(this.currentFeatures.length > 1){
                     if(this.currentFeatures.includes(d.feature)){
+                        console.log(d.state + " average in scatter: " + d.average);
                         return this.featuresColorScales["average"](d.average);
                     }else{
                         return "gray";
@@ -199,6 +200,7 @@ class ScatterExplorerView{
             .attr("fill", d => {
                 if(this.currentFeatures.length > 1){
                     if(this.currentFeatures.includes(d.feature)){
+                        console.log(d.state + " average in scatter: " + d.average);
                         return this.featuresColorScales["average"](d.average);
                     }else{
                         return "gray";

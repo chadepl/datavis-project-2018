@@ -66,34 +66,16 @@ class MapView {
         }
 
         this.drawLegend(this.indexColorScale);
+
+        this.drawTitle();
     
-        /*var data = this.ranks.map(d => {
-            var obj = {"state": d.state};
-            this.indexToDisplay.forEach(index => {
-                var temp = {};
-                temp[index] = d[index];
-                Object.assign(obj, temp);
-            });
-            return obj;
-        })
-
-        // update the data with the average
-
-        data.forEach(d => {
-            var average = 0;
-            d3.entries(d).forEach(i => {
-                if (i.key != "state") average = average + +i.value;
-            })
-            average = average / (d3.entries(d).length - 1);
-            Object.assign(d, {"average": average});
-        })*/
-
         // 2. then just update the svg
         // Fill can change if features change and stroke if state changes
         this.states_shapes
             .attr("fill", d => {
-                var stateInfo = this.findStateInfo(d.properties.NAME.toUpperCase(), this.data, this.currentFeatures);
+                var stateInfo = this.findStateInfo(d.properties.NAME.toUpperCase(), this.data, this.currentFeatures);                
                 if(stateInfo){
+                    console.log(d.properties.NAME.toUpperCase() + " average in map: " + stateInfo);
                     // add texture to selected elements
                     var texture = textures.circles().complement().background(this.indexColorScale(stateInfo));
                     this.svg.call(texture);
@@ -114,37 +96,38 @@ class MapView {
 
 
     findStateInfo(stateName, data, features){
-        if(features.length == 1){
-            for(var i = 0; i < data.length; i++){
-                if(data[i].state == stateName) {
-                    return data[i][features[0]];
-                };
-            }
-        }else{
-            for(var i = 0; i < data.length; i++){
-                if(data[i].state == stateName) {
-                    var average = 0;
-                    features.forEach(d => average += +data[i][d]);
-                    console.log(average/features.length);
-                    return average/features.length;
-                };
-            }
+        for(var i = 0; i < data.length; i++){
+            if(data[i].state == stateName) {
+                var average = 0;
+                features.forEach(d => average += +data[i][d]);
+                return average/features.length;
+            };
         }
     }
    
-    drawTitle(featuresOnDisplay){
+    drawTitle(){
 
         let text = "Displaying: "; 
-        this.currentFeatures.forEach(d => text = text + d +  "|");
+        if(this.currentFeatures.length == 0){
+            text += "choose a ranking in the scatter pane to start."
+        }else if(this.currentFeatures.length == 1){
+            text += this.currentFeatures[0];
+        }else{
+            console.log(this.currentFeatures);
+            text += "average of " + this.currentFeatures.join(", ");
+        }
+        
+        this.svg.select(".map-title").remove();
 
-        const title = this.svg
-        .append("g")
-        .append("text")
-        .attr("x", 10)
-        .attr("y", 35)
-        .attr("font-weight", "bold")
-        .attr("font-size", "2em")
-        .text(text);
+        this.svg
+            .append("g")
+            .attr("class", "map-title")
+            .append("text")
+            .attr("x", 10)
+            .attr("y", 35)
+            .attr("font-weight", "bold")
+            .attr("font-size", "1.5em")
+            .text(text);
     }
 
     // Given a feature (column) displays its color map
