@@ -40,6 +40,7 @@ class MapView {
                 this.stateClickCb(d);
             });         
         
+
         // Color scales 
         this.indexColorScale = d3.scaleSequential();
 
@@ -133,30 +134,45 @@ class MapView {
     // Given a feature (column) displays its color map
     drawLegend(targetScale){
 
+        var legendWidth = 260,
+            legendHeight = 15,
+            legendMargin = {top: 0, right: 25, bottom: 50, left: 0},
+            scaleDomain = targetScale.domain(),
+            step = (legendWidth / Math.abs(scaleDomain[1] - scaleDomain[0])),
+            scaleData = d3.range(d3.min(scaleDomain), d3.max(scaleDomain), 1);
+            
         const x = d3.scaleLinear()
-            .domain(targetScale.domain())
-            .rangeRound([0, 260]);
+            .domain(scaleDomain)
+            .rangeRound([0, legendWidth]);
         
         const legend = this.svg.append("g")
             .style("font-size", "0.8rem")
             .style("font-family", "sans-serif")
-            .attr("transform", "translate("+(this.width/2)+","+(this.height - 40)+")");
+            .attr("transform", "translate("+(this.width - legendWidth - legendMargin.right)+","+(this.height - legendMargin.bottom)+")");
         
         const label = legend.append("text")
             .attr("y", -8)
             .attr("font-weight", "bold")
             .attr("font-size", "2em")
-            .text("Index Color Scale");
+            .text("Ranking Color Scale");
         
         const scale = legend.append("g")
+
+        console.log(scaleDomain);
     
         scale.selectAll("rect")
-            .data(d3.range(1, 50, 1))
+            .data(scaleData)
             .enter().append("rect")
-                .attr("height", 15)
+                .attr("height", legendHeight)
                 .attr("x", d => x(d)) // This should be dynamic
-                .attr("width", (260 / 49) * 1.25)
+                .attr("width", step * 1.25)
                 .attr("fill", d => this.indexColorScale(d));
+
+        legend.append("rect")
+            .attr("x", 0).attr("y", 0)
+            .attr("width", legendWidth + 12).attr("height", legendHeight)
+            .attr("fill", "none")
+            .attr("stroke", "black");
         
         scale.call(
         d3.axisBottom(x) // This should be dynamic
