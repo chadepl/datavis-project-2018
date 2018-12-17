@@ -60,9 +60,9 @@ class MapView {
         // 1. first all the logic that its needed to print the correct color scale and shapes, etc
         if(this.currentFeatures.length == 1){
             var feature_info = this.metadata.filter(d => d.column_id == this.currentFeatures[0])[0];
-            this.indexColorScale = d3.scaleSequential(d3["interpolate" + feature_info.color_scheme]).domain([50, 1])
+            this.indexColorScale = d3.scaleSequential(d3["interpolate" + feature_info.color_scheme]).domain([51, 1])
         }else if (this.currentFeatures.length > 1) {
-            this.indexColorScale = d3.scaleSequential(d3.interpolateRdPu).domain([50, 1]);
+            this.indexColorScale = d3.scaleSequential(d3.interpolateRdPu).domain([51, 1]);
         }
 
         this.drawLegend(this.indexColorScale);
@@ -75,7 +75,8 @@ class MapView {
             .attr("fill", d => {
                 var stateInfo = this.findStateInfo(d.properties.NAME.toUpperCase(), this.data, this.currentFeatures);                
                 if(stateInfo){
-                    // console.log(d.properties.NAME.toUpperCase() + " average in map: " + stateInfo);
+                    //if(this.currentStates.includes(d.properties.NAME.toUpperCase()))
+                    //console.log(d.properties.NAME.toUpperCase() + " average in map: " + stateInfo);
                     // add texture to selected elements
                     var texture = textures.circles().complement().background(this.indexColorScale(stateInfo));
                     this.svg.call(texture);
@@ -110,11 +111,10 @@ class MapView {
         let text = "Displaying: "; 
         if(this.currentFeatures.length == 0){
             text += "choose a ranking in the scatter pane to start."
-        }else if(this.currentFeatures.length == 1){
-            text += this.currentFeatures[0];
+        }else if(this.currentFeatures.length == 1){ 
+            text += this.metadata.filter(d => d.column_id == this.currentFeatures[0])[0]["column_display_name"];
         }else{
-            console.log(this.currentFeatures);
-            text += "average of " + this.currentFeatures.join(", ");
+            text += "average of " + this.metadata.filter(d => this.currentFeatures.includes(d.column_id)).map(f => f.column_display_name).join(", ");
         }
         
         this.svg.select(".map-title").remove();

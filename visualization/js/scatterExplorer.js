@@ -10,7 +10,7 @@ class ScatterExplorerView{
 
         this.currentStates = opts.currentStates;
         this.currentFeatures = opts.currentFeatures;
-        this.chartData = [];
+        this.currentData = [];
 
         this.allFeaturesOnDisplay = this.metadata
             .filter(d => d.hierarchy == "none" && d.column_id != "state")
@@ -52,7 +52,7 @@ class ScatterExplorerView{
         this.allFeaturesOnDisplay.forEach(f => {
             var scale = d3.scaleLinear();
             var allValuesFeature = this.data.map(d => +d[f]);
-            var domain = d3.extent(allValuesFeature);
+            var domain = [1, 51]; //d3.extent(allValuesFeature);
             scale.domain(domain).range([(this.featuresScale.bandwidth()*2/3) - 2, 5]);
             this.featuresSizeScales[f] = scale;
         });
@@ -62,7 +62,7 @@ class ScatterExplorerView{
             var feature_info = this.metadata.filter(d => d.column_id == f)[0];
             var scale = d3.scaleSequential(d3["interpolate" + feature_info.color_scheme]);
             var allValuesFeature = this.data.map(d => +d[f]);
-            var domain = [1, 51];//d3.extent(allValuesFeature);
+            var domain = [51, 1]; //d3.extent(allValuesFeature);
             scale.domain(domain);
             this.featuresColorScales[f] = scale;
         });
@@ -81,23 +81,23 @@ class ScatterExplorerView{
         this.currentStates = states;
         this.currentFeatures = features;
 
-        this.chartData = filteredData;
-        this.chartData = this.chartData.filter(d => this.currentStates.includes(d.state));
-        this.chartData = this.chartData.map(d => {
+        this.currentData = filteredData;
+        this.currentData = this.currentData.filter(d => this.currentStates.includes(d.state));
+        this.currentData = this.currentData.map(d => {
             var obj = {state: d.state};
             var average = 0;
             this.allFeaturesOnDisplay.forEach(f => {
                 obj[f] = d[f];
-                if (this.currentFeatures.includes(f))
+                if (this.currentFeatures.includes(f)) 
                     average += +d[f];
-                obj["average"] = average/this.currentFeatures.length;
             });
+            obj["average"] = average/this.currentFeatures.length;        
             return obj;
         });
         
         // sort by the last feature that was added
-        this.chartData.sort((a,b) => +b["average"] - a["average"]);
-        var orderedStates = this.chartData.map(d => d.state);
+        this.currentData.sort((a,b) => +a["average"] - b["average"]);
+        var orderedStates = this.currentData.map(d => d.state);
         
         // update scales
         this.statesScale.domain(orderedStates).paddingOuter(5);
@@ -116,7 +116,7 @@ class ScatterExplorerView{
 
         var lines = this.statesGridLines
             .selectAll("line")
-            .data(this.chartData);
+            .data(this.currentData);
 
         lines.exit().remove();
 
@@ -136,12 +136,13 @@ class ScatterExplorerView{
         /* State data groups */
 
         var verticalGroups = this.statesGroups.selectAll("g")
-            .data(this.chartData, d => d.state);
+            .data(this.currentData, d => d.state);
 
         verticalGroups.exit().remove();
 
         var stateGroup  = verticalGroups.enter()
             .append("g")
+            .merge(verticalGroups)
             .selectAll("rect")
             .data(d => {
                 var state = d.state;
@@ -150,19 +151,19 @@ class ScatterExplorerView{
                     return {state: state, feature: g.key, value: g.value, average: average};
                 })
              })
-        
+
         stateGroup.enter()
             .append("rect")
             .attr("x", d => this.statesScale(d.state) + (this.statesScale.bandwidth()/2) - (this.barsWidth/2))
-            .attr("y", d => this.featuresScale(d.feature))// - (this.featuresScale.bandwidth()/2))
+            .attr("y", d => this.featuresScale(d.feature)) 
             .attr("height", d => this.featuresSizeScales[d.feature](d.value))
             .attr("width",  this.barsWidth)
             .attr("stroke", "black")
             .attr("stroke-width", "2")
             .attr("fill", d => {
+                // console.log(d.state + " average in scatter: " + +d.average);
                 if(this.currentFeatures.length > 1){
-                    if(this.currentFeatures.includes(d.feature)){
-                        console.log(d.state + " average in scatter: " + d.average);
+                    if(this.currentFeatures.includes(d.feature)){                        
                         return this.featuresColorScales["average"](d.average);
                     }else{
                         return "gray";
