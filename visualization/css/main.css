@@ -26,6 +26,7 @@
 .f_name{
   margin-bottom: 20px;
   color: #ccc;
+  text-align: left;
 }
 
 .togg:hover{
