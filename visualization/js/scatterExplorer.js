@@ -62,7 +62,7 @@ class ScatterExplorerView{
             var feature_info = this.metadata.filter(d => d.column_id == f)[0];
             var scale = d3.scaleSequential(d3["interpolate" + feature_info.color_scheme]);
             var allValuesFeature = this.data.map(d => +d[f]);
-            var domain = d3.extent(allValuesFeature);
+            var domain = [1, 51];//d3.extent(allValuesFeature);
             scale.domain(domain);
             this.featuresColorScales[f] = scale;
         });
