@@ -29,13 +29,23 @@
   text-align: left;
 }
 
+.f_container label{
+  color: #fff;
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+
 
 .amount_lbl{
+  height: 22px !important;
     border: 0 !important;
     padding: 0 !important;
     border: none !important;
     color: #f6931f !important;
     font-weight: bold !important;
+    font-size: 0.7em;
+    background: none !important;
 }
 
 .togg:hover{
@@ -110,6 +120,8 @@
 
 #filters{
   overflow-y: scroll;
+  padding-right: 33px;
+  padding-bottom: 30px;
   /*padding-left: 20px;
   padding-top: 20px;
   text-align: left;*/
@@ -121,6 +133,26 @@
 
 .states{
 	fill: #dff9fb;
+}
+.label_container{
+  font-size: 1.6em;
+}
+
+#fiter_icon{
+  width: 30px;
+  margin-left: 40px;
+  margin-top: -11px;
+}
+
+#filter_text{
+  margin-top: 40px;
+  margin-left: 20px;
+  font-size: 2em;
+  display: inline-block;
+}
+
+#fiter_icon:hover{
+  cursor: pointer;
 }
 
 .states :hover {
@@ -181,7 +213,7 @@ div.tooltip {
   z-index: 1; /* Stay on top */
   top: 0; /* Stay at the top */
   left: 0;
-  background-color: #111; /* Black*/
+  background-color: rgba(0,0,0,0.8); /* Black*/
   overflow-x: hidden; /* Disable horizontal scroll */
   padding-top: 60px; /* Place content 60px from the top */
   transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */

@@ -136,7 +136,6 @@ var uncheckAllRanksChecks = function(){
 
 
 //filter setup
-
 function initializeFilters(ranks_meta, data)
 {
     for(var i = 0 ; i < ranks_meta.length ; i++){
@@ -145,7 +144,7 @@ function initializeFilters(ranks_meta, data)
             console.log("hi");
             var minmax = min_max(data,$rank.column_id);
             var $filterContainer = "<div class='f_container'>";
-            var $label = "<p><label for='" + $rank.column_id + "_amount'>" + $rank.column_display_name + "</label>" + 
+            var $label = "<p class='label_container'><label for='" + $rank.column_id + "_amount'>" + $rank.column_display_name + "</label>" + 
                 "<input class='amount_lbl' type='text' id='" + $rank.column_id + "_amount' readonly></p>"
             $("#filters").append($filterContainer + $label + "<div id='"+$rank.column_id+"_slider' class='slider-input' /><br></div>")
 
@@ -229,7 +228,7 @@ var filterData = function(){
 
 /* Set the width of the side navigation to 250px */
 function openNav() {
-  document.getElementById("mySidenav").style.width = "250px";
+  document.getElementById("mySidenav").style.width = "300px";
 }
 
 /* Set the width of the side navigation to 0 */
