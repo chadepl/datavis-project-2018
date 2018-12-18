@@ -144,15 +144,9 @@ body{
   overflow-y: scroll;
   padding-right: 33px;
   padding-bottom: 30px;
-  /*padding-left: 20px;
-  padding-top: 20px;
-  text-align: left;*/
 }
 
-
 /*map stuff*/
-
-
 .states{
 	fill: #dff9fb;
 }
