@@ -19,7 +19,7 @@ body{
 }
 
 #sub_title{
-  margin-bottom: 25px;
+  margin-bottom: 10px;
   font-size: 2em;
   color: #555;
 }
@@ -161,7 +161,7 @@ body{
 }
 
 #filter_text{
-  margin-top: 40px;
+  margin-top: 10px;
   margin-left: 20px;
   font-size: 2em;
   display: inline-block;
