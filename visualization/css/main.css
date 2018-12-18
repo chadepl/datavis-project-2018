@@ -14,8 +14,13 @@ body{
 #title{
   font-size: 4em;
   color: #555;
+  margin-top: 20px;
   font-family: 'Staatliches', cursive;
   text-transform: uppercase;
+}
+
+#filt_cont{
+  float: left;
 }
 
 #sub_title{
