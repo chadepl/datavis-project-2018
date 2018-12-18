@@ -99,13 +99,15 @@ class MapView {
                 }else{
                     return "white";
                 }       
-            }).on("mouseover", d => {	
+            }).on("mouseover", d => {
+                var x = d3.event.pageX - 20;
+                var y = d3.event.pageY - 120;
                 this.tooltip.transition()		
                     .duration(200)		
-                    .style("opacity", .9);		
+                    .style("opacity", .9)		
                 this.tooltip.html(this.generateTooltipHTML(d.properties.NAME.toUpperCase(), this.findStateInfo(d.properties.NAME.toUpperCase(), this.data, this.currentFeatures)))	
-                    .style("left", (d3.event.pageX) + "px")		
-                    .style("top", (d3.event.pageY - 28) + "px");	
+                    .style("left", x + "px")		
+                    .style("top", y + "px");	
                 })					
             .on("mouseout", d => {		
                 this.tooltip.transition()		

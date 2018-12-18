@@ -180,12 +180,14 @@ class ScatterExplorerView{
                 console.log(d);
             })
             .on("mouseover", d => {	
+                var x = d3.event.pageX - 20; //- d3.select(this.element).node().getBoundingClientRect().x + 10;
+                var y = d3.event.pageY - 120; //- d3.select(this.element).node().getBoundingClientRect().y + 10;
                 this.tooltip.transition()		
                     .duration(200)		
                     .style("opacity", .9);		
                 this.tooltip.html(this.generateTooltipHTML(d.state, d.feature))	
-                    .style("left", (d3.event.pageX - 20) + "px")		
-                    .style("top", (d3.event.pageY - 0) + "px");	
+                    .style("left", (x) + "px")		
+                    .style("top", (y) + "px");	
                 })					
             .on("mouseout", d => {		
                 this.tooltip.transition()		
