@@ -40,6 +40,7 @@ class MapView {
                 this.stateClickCb(d);
             });         
         
+
         // Color scales 
         this.indexColorScale = d3.scaleSequential();
 
@@ -60,9 +61,9 @@ class MapView {
         // 1. first all the logic that its needed to print the correct color scale and shapes, etc
         if(this.currentFeatures.length == 1){
             var feature_info = this.metadata.filter(d => d.column_id == this.currentFeatures[0])[0];
-            this.indexColorScale = d3.scaleSequential(d3["interpolate" + feature_info.color_scheme]).domain([50, 1])
+            this.indexColorScale = d3.scaleSequential(d3["interpolate" + feature_info.color_scheme]).domain([51, 1])
         }else if (this.currentFeatures.length > 1) {
-            this.indexColorScale = d3.scaleSequential(d3.interpolateRdPu).domain([50, 1]);
+            this.indexColorScale = d3.scaleSequential(d3.interpolateRdPu).domain([51, 1]);
         }
 
         this.drawLegend(this.indexColorScale);
@@ -75,7 +76,8 @@ class MapView {
             .attr("fill", d => {
                 var stateInfo = this.findStateInfo(d.properties.NAME.toUpperCase(), this.data, this.currentFeatures);                
                 if(stateInfo){
-                    // console.log(d.properties.NAME.toUpperCase() + " average in map: " + stateInfo);
+                    //if(this.currentStates.includes(d.properties.NAME.toUpperCase()))
+                    //console.log(d.properties.NAME.toUpperCase() + " average in map: " + stateInfo);
                     // add texture to selected elements
                     var texture = textures.circles().complement().background(this.indexColorScale(stateInfo));
                     this.svg.call(texture);
@@ -110,11 +112,10 @@ class MapView {
         let text = "Displaying: "; 
         if(this.currentFeatures.length == 0){
             text += "choose a ranking in the scatter pane to start."
-        }else if(this.currentFeatures.length == 1){
-            text += this.currentFeatures[0];
+        }else if(this.currentFeatures.length == 1){ 
+            text += this.metadata.filter(d => d.column_id == this.currentFeatures[0])[0]["column_display_name"];
         }else{
-            console.log(this.currentFeatures);
-            text += "average of " + this.currentFeatures.join(", ");
+            text += "average of " + this.metadata.filter(d => this.currentFeatures.includes(d.column_id)).map(f => f.column_display_name).join(", ");
         }
         
         this.svg.select(".map-title").remove();
@@ -133,30 +134,45 @@ class MapView {
     // Given a feature (column) displays its color map
     drawLegend(targetScale){
 
+        var legendWidth = 260,
+            legendHeight = 15,
+            legendMargin = {top: 0, right: 25, bottom: 50, left: 0},
+            scaleDomain = targetScale.domain(),
+            step = (legendWidth / Math.abs(scaleDomain[1] - scaleDomain[0])),
+            scaleData = d3.range(d3.min(scaleDomain), d3.max(scaleDomain), 1);
+            
         const x = d3.scaleLinear()
-            .domain(targetScale.domain())
-            .rangeRound([0, 260]);
+            .domain(scaleDomain)
+            .rangeRound([0, legendWidth]);
         
         const legend = this.svg.append("g")
             .style("font-size", "0.8rem")
             .style("font-family", "sans-serif")
-            .attr("transform", "translate("+(this.width/2)+","+(this.height - 40)+")");
+            .attr("transform", "translate("+(this.width - legendWidth - legendMargin.right)+","+(this.height - legendMargin.bottom)+")");
         
         const label = legend.append("text")
             .attr("y", -8)
             .attr("font-weight", "bold")
             .attr("font-size", "2em")
-            .text("Index Color Scale");
+            .text("Ranking Color Scale");
         
         const scale = legend.append("g")
+
+        console.log(scaleDomain);
     
         scale.selectAll("rect")
-            .data(d3.range(1, 50, 1))
+            .data(scaleData)
             .enter().append("rect")
-                .attr("height", 15)
+                .attr("height", legendHeight)
                 .attr("x", d => x(d)) // This should be dynamic
-                .attr("width", (260 / 49) * 1.25)
+                .attr("width", step * 1.25)
                 .attr("fill", d => this.indexColorScale(d));
+
+        legend.append("rect")
+            .attr("x", 0).attr("y", 0)
+            .attr("width", legendWidth + 12).attr("height", legendHeight)
+            .attr("fill", "none")
+            .attr("stroke", "black");
         
         scale.call(
         d3.axisBottom(x) // This should be dynamic
