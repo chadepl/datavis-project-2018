@@ -44,6 +44,12 @@ class MapView {
         // Color scales 
         this.indexColorScale = d3.scaleSequential();
 
+        // tooltip
+        this.tooltip = d3.select(this.element).append("div")	
+            .attr("class", "tooltip-map")				
+            .style("opacity", 0);
+
+
         this.redrawMap();
     }
 
@@ -93,7 +99,34 @@ class MapView {
                 }else{
                     return "white";
                 }       
+            }).on("mouseover", d => {	
+                this.tooltip.transition()		
+                    .duration(200)		
+                    .style("opacity", .9);		
+                this.tooltip.html(this.generateTooltipHTML(d.properties.NAME.toUpperCase(), this.findStateInfo(d.properties.NAME.toUpperCase(), this.data, this.currentFeatures)))	
+                    .style("left", (d3.event.pageX) + "px")		
+                    .style("top", (d3.event.pageY - 28) + "px");	
+                })					
+            .on("mouseout", d => {		
+                this.tooltip.transition()		
+                    .duration(200)		
+                    .style("opacity", 0);	
             });
+    }
+
+    generateTooltipHTML(state, value){
+
+        var html = "";
+
+        html += "<h2>"+ state +"</h2>";
+
+        if (this.currentFeatures.length == 1)
+            html += "<h3>"+ this.currentFeatures[0] +": "+ value +"</h3>";
+        else
+        html += "<h3> Average: "+ value +"</h3>";
+
+        return html;
+            
     }
 
 
@@ -137,7 +170,7 @@ class MapView {
         var legendWidth = 260,
             legendHeight = 15,
             legendMargin = {top: 0, right: 25, bottom: 50, left: 0},
-            scaleDomain = targetScale.domain(),
+            scaleDomain = [targetScale.domain()[1], targetScale.domain()[0]],
             step = (legendWidth / Math.abs(scaleDomain[1] - scaleDomain[0])),
             scaleData = d3.range(d3.min(scaleDomain), d3.max(scaleDomain), 1);
             
@@ -170,7 +203,7 @@ class MapView {
 
         legend.append("rect")
             .attr("x", 0).attr("y", 0)
-            .attr("width", legendWidth + 12).attr("height", legendHeight)
+            .attr("width", legendWidth).attr("height", legendHeight)
             .attr("fill", "none")
             .attr("stroke", "black");
         

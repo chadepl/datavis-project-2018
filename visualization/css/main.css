@@ -209,11 +209,27 @@ body{
   text-anchor: end;
 }
 
-div.tooltip {	
+div.tooltip-scatter {	
   position: absolute;			
   text-align: center;			
   width: 300px;					
   height: 350px;					
+  padding: 8px;				
+  font: 12px sans-serif;	
+  color: white;	
+  background: #262626;	
+  border: 1px;		
+  border-color: black;
+  border-radius: 8px;			
+  pointer-events: none;
+  overflow-y: scroll;			
+}
+
+div.tooltip-map {	
+  position: absolute;			
+  text-align: center;			
+  width: 200px;					
+  height: 75px;					
   padding: 8px;				
   font: 12px sans-serif;	
   color: white;	

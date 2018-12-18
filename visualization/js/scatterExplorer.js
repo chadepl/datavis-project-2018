@@ -70,7 +70,7 @@ class ScatterExplorerView{
 
         // tooltip
         this.tooltip = d3.select(this.element).append("div")	
-            .attr("class", "tooltip")				
+            .attr("class", "tooltip-scatter")				
             .style("opacity", 0);
 
         this.updateScatterData(this.data, this.currentStates, this.currentFeatures);
@@ -184,8 +184,8 @@ class ScatterExplorerView{
                     .duration(200)		
                     .style("opacity", .9);		
                 this.tooltip.html(this.generateTooltipHTML(d.state, d.feature))	
-                    .style("left", (d3.event.pageX) + "px")		
-                    .style("top", (d3.event.pageY - 28) + "px");	
+                    .style("left", (d3.event.pageX - 20) + "px")		
+                    .style("top", (d3.event.pageY - 0) + "px");	
                 })					
             .on("mouseout", d => {		
                 this.tooltip.transition()		
