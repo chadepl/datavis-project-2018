@@ -5,6 +5,28 @@
   text-align: center;
 }
 
+body{
+  color: #333;
+  background: #fafafa;
+  font-family: 'Open Sans', sans-serif;
+}
+
+#title{
+  font-size: 4em;
+  color: #555;
+  font-family: 'Staatliches', cursive;
+  text-transform: uppercase;
+}
+
+#sub_title{
+  margin-bottom: 50px;
+  font-size: 2em;
+  color: #555;
+}
+
+#map{
+ margin-top: 29px;
+}
 /*.left{
   margin-left: 2%;
   width: 34% !important; 
@@ -42,7 +64,7 @@
     border: 0 !important;
     padding: 0 !important;
     border: none !important;
-    color: #f6931f !important;
+    color: #f1c40f !important;
     font-weight: bold !important;
     font-size: 0.7em;
     background: none !important;
@@ -122,15 +144,9 @@
   overflow-y: scroll;
   padding-right: 33px;
   padding-bottom: 30px;
-  /*padding-left: 20px;
-  padding-top: 20px;
-  text-align: left;*/
 }
 
-
 /*map stuff*/
-
-
 .states{
 	fill: #dff9fb;
 }

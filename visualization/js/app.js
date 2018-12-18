@@ -9,10 +9,6 @@ var promises = [
     d3.csv("../../raw_data/joined_data.csv"),
     d3.csv("../../raw_data/ranks_metadata.csv"),
     d3.csv("../../raw_data/ranks/ranks.csv")
-    //d3.csv("../../raw_data/population/population.csv"),
-    //d3.csv("../../raw_data/stability/Stability.csv"),
-    //d3.csv("../../raw_data/talent/talent.csv"),
-    //d3.csv("../../raw_data/development/development.csv")
 ];
 
 Promise.all(promises).then(function(files) {
@@ -75,7 +71,6 @@ var getCurrentStates = function(statesStatus){
 var stateClickCb = function(state){
     statesStatus[state.properties.NAME.toUpperCase()] ^= true;
     currentStates = getCurrentStates(statesStatus);
-    console.log(filteredData.length);
     map.updateMapData(filteredData, currentStates, currentFeatures);
     scatterExplorer.updateScatterData(filteredData, currentStates, currentFeatures);
 }  
@@ -141,7 +136,6 @@ function initializeFilters(ranks_meta, data)
     for(var i = 0 ; i < ranks_meta.length ; i++){
         var $rank = ranks_meta[i];
         if($rank.filter == "TRUE" && $rank.column_id != "state" && $rank.column_id != "talent_rank"){
-            console.log("hi");
             var minmax = min_max(data,$rank.column_id);
             var $filterContainer = "<div class='f_container'>";
             var $label = "<p class='label_container'><label for='" + $rank.column_id + "_amount'>" + $rank.column_display_name + "</label>" + 
@@ -163,23 +157,12 @@ function initializeFilters(ranks_meta, data)
             sliderValues[$rank.column_id] = minmax;
         }
     }
-
-    // for(var c_id in sliderValues){
-    //     console.log(c_id);
-    //     console.log(sliderValues[c_id]);
-    //     for(var i = 0 ; i < fullData.length ; i++){
-    //         if(fullData[i][c_id] < sliderValues[c_id][0] || fullData[i][c_id] > sliderValues[c_id][1]){
-    //             console.log("ERROR");
-    //         }
-    //     }
-    // }
 }
 
 var onSliderChange = function(event, ui){
     var col_id = event.target.id.replace('_slider','');
     $( "#"+col_id+"_amount" ).val(ui.values[0] + " - " + ui.values[1] );
     sliderValues[col_id] = ui.values.slice();
-    // console.log(sliderValues);
     filterData();
 }
 
@@ -207,10 +190,6 @@ var filterData = function(){
     for(var i = 0 ; i < fullData.length ; i++){
         var passFilter = true;
         for(var c_id in sliderValues){
-            // console.log(c_id);
-            // console.log(+fullData[i][c_id]);
-            // console.log(+sliderValues[c_id][0]);
-            // console.log(+sliderValues[c_id][1]);
             if(+fullData[i][c_id] < sliderValues[c_id][0] || +fullData[i][c_id] > sliderValues[c_id][1]){
                 passFilter = false;
             }
@@ -218,7 +197,6 @@ var filterData = function(){
         if(passFilter)
             filteredData.push(fullData[i]);
     }
-    console.log(filteredData.length);
     scatterExplorer.updateScatterData(filteredData, currentStates, currentFeatures);
     map.updateMapData(filteredData, currentStates, currentFeatures);
     
