@@ -29,6 +29,15 @@
   text-align: left;
 }
 
+
+.amount_lbl{
+    border: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    color: #f6931f !important;
+    font-weight: bold !important;
+}
+
 .togg:hover{
   cursor: pointer;
 }

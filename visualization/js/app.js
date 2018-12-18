@@ -75,7 +75,7 @@ var getCurrentStates = function(statesStatus){
 var stateClickCb = function(state){
     statesStatus[state.properties.NAME.toUpperCase()] ^= true;
     currentStates = getCurrentStates(statesStatus);
-    
+    console.log(filteredData.length);
     map.updateMapData(filteredData, currentStates, currentFeatures);
     scatterExplorer.updateScatterData(filteredData, currentStates, currentFeatures);
 }  
@@ -140,37 +140,47 @@ var uncheckAllRanksChecks = function(){
 function initializeFilters(ranks_meta, data)
 {
     for(var i = 0 ; i < ranks_meta.length ; i++){
-        var rank = ranks_meta[i];
-        if(rank.filter == "TRUE"){
+        var $rank = ranks_meta[i];
+        if($rank.filter == "TRUE" && $rank.column_id != "state" && $rank.column_id != "talent_rank"){
+            console.log("hi");
+            var minmax = min_max(data,$rank.column_id);
+            var $filterContainer = "<div class='f_container'>";
+            var $label = "<p><label for='" + $rank.column_id + "_amount'>" + $rank.column_display_name + "</label>" + 
+                "<input class='amount_lbl' type='text' id='" + $rank.column_id + "_amount' readonly></p>"
+            $("#filters").append($filterContainer + $label + "<div id='"+$rank.column_id+"_slider' class='slider-input' /><br></div>")
 
-            var minmax = min_max(data,rank.column_id);
-            console.log(minmax);
-            var steps = Math.floor((minmax[1] - minmax[0])/20);
-            var $filterContainer = "<div class='f_container'><div class='f_name'>" + rank.column_display_name + "</div>";
-            $("#filters").append($filterContainer + "<input type='hidden' id='"+rank.column_id+"_slider' class='slider-input' /><br></div>")
-            $("#"+rank.column_id+"_slider").jRange({
-                from: minmax[0],
-                to: minmax[1],
-                format: '%s',
-                width: "80%",
-                theme: 'theme-blue',
-                showLabels: true,
-                isRange : true,
-                ondragend: onSliderChange,
-                sliderName: rank.column_id
-            });
-            console.log( $("#"+rank.column_id+"_slider"));
-            $("#"+rank.column_id+"_slider").jRange("setValue", minmax[0] + "," + minmax[1])
-            sliderValues[rank.column_id] = minmax;
+            var range = (minmax[1] - minmax[0])/20;
+            var rangeInfo = {
+                range: true,
+                min: minmax[0],
+                max: minmax[1],
+                step: range,
+                values: minmax,
+                stop: onSliderChange
+                }
+            $( "#"+$rank.column_id+"_slider" ).slider(rangeInfo);
+            $( "#"+$rank.column_id+"_amount" ).val($( "#"+$rank.column_id+"_slider" ).slider( "values", 0 ) +
+                " - " + $( "#"+$rank.column_id+"_slider" ).slider( "values", 1 ) );
+            sliderValues[$rank.column_id] = minmax;
         }
     }
+
+    // for(var c_id in sliderValues){
+    //     console.log(c_id);
+    //     console.log(sliderValues[c_id]);
+    //     for(var i = 0 ; i < fullData.length ; i++){
+    //         if(fullData[i][c_id] < sliderValues[c_id][0] || fullData[i][c_id] > sliderValues[c_id][1]){
+    //             console.log("ERROR");
+    //         }
+    //     }
+    // }
 }
 
-var onSliderChange = function(args){
-    var range = args.value.split(",");
-    console.log(range);
-    var sliderName = args.sliderName;
-    sliderValues[sliderName] = range.slice();
+var onSliderChange = function(event, ui){
+    var col_id = event.target.id.replace('_slider','');
+    $( "#"+col_id+"_amount" ).val(ui.values[0] + " - " + ui.values[1] );
+    sliderValues[col_id] = ui.values.slice();
+    // console.log(sliderValues);
     filterData();
 }
 
@@ -194,14 +204,22 @@ function min_max(data,column){
 }
 
 var filterData = function(){
-    filteredData = fullData.slice();
-    //console.log(sliderValues);
-    for(var column_id in sliderValues){
-        filteredData = $.grep(filteredData, function(d){ 
-            return +d[column_id] >= sliderValues[column_id][0] && +d[column_id] <= sliderValues[column_id][1]; 
-        });
+    filteredData = new Array();
+    for(var i = 0 ; i < fullData.length ; i++){
+        var passFilter = true;
+        for(var c_id in sliderValues){
+            // console.log(c_id);
+            // console.log(+fullData[i][c_id]);
+            // console.log(+sliderValues[c_id][0]);
+            // console.log(+sliderValues[c_id][1]);
+            if(+fullData[i][c_id] < sliderValues[c_id][0] || +fullData[i][c_id] > sliderValues[c_id][1]){
+                passFilter = false;
+            }
+        }
+        if(passFilter)
+            filteredData.push(fullData[i]);
     }
-    //console.log(filteredData);
+    console.log(filteredData.length);
     scatterExplorer.updateScatterData(filteredData, currentStates, currentFeatures);
     map.updateMapData(filteredData, currentStates, currentFeatures);
     
