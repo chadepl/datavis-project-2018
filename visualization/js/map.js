@@ -100,8 +100,9 @@ class MapView {
                     return "white";
                 }       
             }).on("mouseover", d => {
-                var x = d3.event.pageX - 20;
-                var y = d3.event.pageY - 120;
+                // tooltip dimensions: height is 75px width is 200px
+                var x = d3.event.pageX - 20 - 100;
+                var y = d3.event.pageY - 110;
                 this.tooltip.transition()		
                     .duration(200)		
                     .style("opacity", .9)		
