@@ -16,8 +16,7 @@ class ScatterExplorerView{
             .filter(d => d.hierarchy == "none" && d.column_id != "state")
             .map(d => d.column_id);
 
-        // Visualization parameters
-
+        // Global attributes of the visualization
         this.width = d3.select(this.element).node().getBoundingClientRect().width;
         this.height = d3.select(this.element).node().getBoundingClientRect().height;
         this.margin = {top: 30, right: 100, bottom: 70, left:150}; 
@@ -68,7 +67,7 @@ class ScatterExplorerView{
         });
         this.featuresColorScales["average"] = d3.scaleSequential(d3.interpolateRdPu).domain([50, 1]);
 
-        // tooltip
+        // Tooltip
         this.tooltip = d3.select(this.element).append("div")	
             .attr("class", "tooltip-scatter")				
             .style("opacity", 0);
@@ -76,6 +75,7 @@ class ScatterExplorerView{
         this.updateScatterData(this.data, this.currentStates, this.currentFeatures);
     }
 
+    /* This is mainly used by app.js to update the visualization */
     updateScatterData(filteredData, states, features){
 
         this.currentStates = states;
@@ -161,7 +161,6 @@ class ScatterExplorerView{
             .attr("stroke", "black")
             .attr("stroke-width", "2")
             .attr("fill", d => {
-                // console.log(d.state + " average in scatter: " + +d.average);
                 if(this.currentFeatures.length > 1){
                     if(this.currentFeatures.includes(d.feature)){                        
                         return this.featuresColorScales["average"](d.average);
@@ -275,6 +274,18 @@ class ScatterExplorerView{
 
     }
 
+    handleFeatureClick(feature){
+
+        this.featureClickCb(feature);
+    
+    }
+
+    setFeatureClickCb(cb){
+        this.featureClickCb = cb;
+    }
+
+    /* Utilities */
+
     generateTooltipHTML(state, feature){
 
         var html = "";
@@ -309,16 +320,6 @@ class ScatterExplorerView{
         html += "</table>"
         return html;
             
-    }
-
-    handleFeatureClick(feature){
-
-        this.featureClickCb(feature);
-    
-    }
-
-    setFeatureClickCb(cb){
-        this.featureClickCb = cb;
     }
 
     

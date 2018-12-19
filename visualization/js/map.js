@@ -1,4 +1,5 @@
 class MapView {
+
     constructor(opts){
 
         this.stateClickCb = null;
@@ -15,7 +16,7 @@ class MapView {
         // Geometry related attributes
         this.states = topojson.feature(this.geometry, this.geometry.objects.cb_2014_us_state_500k).features;
 
-        // Global attributes    
+        // Global attributes of the visualization
         this.width = d3.select(this.element).node().getBoundingClientRect().width;
         this.height = d3.select(this.element).node().getBoundingClientRect().height;
         
@@ -25,7 +26,7 @@ class MapView {
              .attr("height", this.height);
 
         this.projection = d3.geoAlbersUsa()
-            .scale(800) // TODO: make this dynamic
+            .scale(800) 
             .translate([this.width/2, this.height/2]);
         this.path = d3.geoPath().projection(this.projection);
         
@@ -44,7 +45,7 @@ class MapView {
         // Color scales 
         this.indexColorScale = d3.scaleSequential();
 
-        // tooltip
+        // Tooltip
         this.tooltip = d3.select(this.element).append("div")	
             .attr("class", "tooltip-map")				
             .style("opacity", 0);
@@ -53,6 +54,7 @@ class MapView {
         this.redrawMap();
     }
 
+    /* This is mainly used by app.js to update the visualization */
     updateMapData(filteredData, states, features){
         this.currentData = filteredData;
         this.currentStates = states;
@@ -82,8 +84,6 @@ class MapView {
             .attr("fill", d => {
                 var stateInfo = this.findStateInfo(d.properties.NAME.toUpperCase(), this.data, this.currentFeatures);                
                 if(stateInfo){
-                    //if(this.currentStates.includes(d.properties.NAME.toUpperCase()))
-                    //console.log(d.properties.NAME.toUpperCase() + " average in map: " + stateInfo);
                     // add texture to selected elements
                     var texture = textures.circles().complement().background(this.indexColorScale(stateInfo));
                     this.svg.call(texture);
@@ -115,32 +115,6 @@ class MapView {
                     .duration(200)		
                     .style("opacity", 0);	
             });
-    }
-
-    generateTooltipHTML(state, value){
-
-        var html = "";
-
-        html += "<h2>"+ state +"</h2>";
-
-        if (this.currentFeatures.length == 1)
-            html += "<h3>"+ this.currentFeatures[0] +": "+ value +"</h3>";
-        else
-        html += "<h3> Average: "+ value +"</h3>";
-
-        return html;
-            
-    }
-
-
-    findStateInfo(stateName, data, features){
-        for(var i = 0; i < data.length; i++){
-            if(data[i].state == stateName) {
-                var average = 0;
-                features.forEach(d => average += +data[i][d]);
-                return average/features.length;
-            };
-        }
     }
    
     drawTitle(){
@@ -219,150 +193,34 @@ class MapView {
      
     }
 
+    /* Utilities */
 
+    generateTooltipHTML(state, value){
 
+        var html = "";
 
+        html += "<h2>"+ state +"</h2>";
 
+        if (this.currentFeatures.length == 1)
+            html += "<h3>"+ this.currentFeatures[0] +": "+ value +"</h3>";
+        else
+        html += "<h3> Average: "+ value +"</h3>";
 
-
-
-
-    //////////////////////
-
-    drawPopulationLayer(){
-        console.log("draw population");
-        this.svg.selectAll("path")
-            .style("fill", function(d) {
-                // Get data value
-                var value = d.properties.ranks.population;
-                if (value) {
-                    //If value exists…
-                    return "rgba(0,184,148, " + value/50+ ")";
-                } else {
-                    //If value is undefined…
-                    return "rgb(213,222,217)";
-                }
-            });
-
+        return html;
+            
     }
 
-    changeFill(state){
-        
+    findStateInfo(stateName, data, features){
+        for(var i = 0; i < data.length; i++){
+            if(data[i].state == stateName) {
+                var average = 0;
+                features.forEach(d => average += +data[i][d]);
+                return average/features.length;
+            };
+        }
     }
 
-    removePopulationLayer(){
-    }
-
-    // Layer 2: economic / stability
-
-    drawStabilityLayer(){
-        console.log("draw stability");
-        this.svg.selectAll("path")
-            .style("fill", function(d) {
-                // Get data value
-                var value = d.properties.ranks.stability;
-                if (value) {
-                    //If value exists…
-                    return "rgba(0,184,148, " + value/50+ ")";
-                } else {
-                    //If value is undefined…
-                    return "rgb(213,222,217)";
-                }
-            });
-    }
-
-    drawDevelopmentLayer(){
-        console.log("draw stability");
-        this.svg.selectAll("path")
-            .style("fill", function(d) {
-                // Get data value
-                var value = d.properties.ranks.development;
-                if (value) {
-                    //If value exists…
-                    return "rgba(0,184,148, " + value/50+ ")";
-                } else {
-                    //If value is undefined…
-                    return "rgb(213,222,217)";
-                }
-            });
-    }
-
-    removeStabilityLayer(){
-
-    }
-
-    // Layer 3: talent
-
-    drawTalentLayer(){
-        console.log("draw talent");
-        this.svg.selectAll("path")
-            .style("fill", function(d) {
-                // Get data value
-                var value = d.properties.ranks.talent;
-                if (value) {
-                    //If value exists…
-                    return "rgba(0,184,148, " + value/50+ ")";
-                } else {
-                    //If value is undefined…
-                    return "rgb(213,222,217)";
-                }
-            });
-        // this.svg.selectAll(".university")
-        //     .data(this.universities)
-        //     .enter()
-        //     .append("circle")
-        //     .attr("class", "university")
-        //     .attr("cx", d => {
-        //         return this.projection([d.lng, d.lat])[0];
-        //     })
-        //     .attr("cy", d => {
-        //         return this.projection([d.lng, d.lat])[1];
-        //     })
-        //     .attr("r", d => {                
-        //         return 5;
-        //     })
-        //     .attr("stroke", "black")
-        //     .attr("fill", "white")
-        //     .on("click", d => console.log(d.institution + ": " + d.influence));
-
-
-    }
-
-    removeTalentLayer(){
-        this.svg.selectAll(".university").remove();
-    }
-
-    // Layer 4: location
-    drawLocationLayer(){
-
-    }
-
-    removeLocationLayer(){
-
-    }
-
-    // Experimental Layers
-
-    drawCNBCBestCitiesLayer(){
-        this.us_counties.objects.top_cities = {
-            type: "GeometryCollection",
-            geometries: this.us_counties.objects.tl_2015_us_county.geometries.filter(g => (this.cnbc_best_cities.map(d => d.city)).includes(g.properties.NAME))
-        };
-        
-
-        this.svg.selectAll(".cities")
-            .data(topojson.feature(this.us_counties, this.us_counties.objects.top_cities).features)
-            .enter()
-            .append("path")
-            .attr("class", "cities")
-            .attr("d", this.path);
-    }
-
-    removeCNBCBestCitiesLayer(){
-        this.svg.selectAll(".cities").remove();
-    }
-
-    // setters
+    /* Setters */
 
     setStateClickCb(cb){
         this.stateClickCb = cb;

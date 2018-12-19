@@ -2,7 +2,6 @@ var layer_on = false;
 var sidePaneMode = "radar";
 var sliderValues = {};
 var ranks_meta, statesStatus, currentStates, currentFeatures, filteredData, fullData;
-var _url = 'http://localhost:8888/raw_data/';
 var map, radar;
 var promises = [
     d3.json("../../raw_data/geographic/us_states.json"),
@@ -66,7 +65,7 @@ var getCurrentStates = function(statesStatus){
 }
 
 
-/* Set callbacks */
+/* Callbacks */
 
 var stateClickCb = function(state){
     statesStatus[state.properties.NAME.toUpperCase()] ^= true;
@@ -89,7 +88,6 @@ var featureClickCb = function(feature){
     map.updateMapData(filteredData, currentStates, currentFeatures);
     scatterExplorer.updateScatterData(filteredData, currentStates, currentFeatures);
 }  
-
 
 /* HTML events handling */
 
@@ -129,8 +127,8 @@ var uncheckAllRanksChecks = function(){
 }
 
 
+/* Filters */
 
-//filter setup
 function initializeFilters(ranks_meta, data)
 {
     for(var i = 0 ; i < ranks_meta.length ; i++){
@@ -202,14 +200,14 @@ var filterData = function(){
     
 }
 
-// sliding menu stuff
+/* Sliding Menu */
 
-/* Set the width of the side navigation to 250px */
+// Set the width of the side navigation to 250px
 function openNav() {
   document.getElementById("mySidenav").style.width = "300px";
 }
 
-/* Set the width of the side navigation to 0 */
+// Set the width of the side navigation to 0
 function closeNav() {
   document.getElementById("mySidenav").style.width = "0";
 }
