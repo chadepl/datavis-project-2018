@@ -1,2 +1,1 @@
-# datavis-project-2018
-Project for the data visualization class at TU Delft (2018).
+Repository of the project for the data visualization class at TU Delft (2018).
