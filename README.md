@@ -5,3 +5,12 @@ This repository contains the code for the visualization project for the Data Vis
 ### System overview 
 ![](images/system-overview.png)
 
+### Sorting with different variables
+![](images/sorting-different.png)
+
+### Getting more information
+![](images/more-info.png)
+
+### Textured map for extra information
+![](images/map-detail.png)
+
